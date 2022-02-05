@@ -23,6 +23,7 @@ class MainWindow(QWidget):
         super().__init__()
         
         self.prev_operation = ""
+        self.first_value = 0
         
         self._window_settings()
         
@@ -179,54 +180,97 @@ class MainWindow(QWidget):
         
         res = 0
         
+        #Addition
         if operation == "+":
-            self.first_value = int(self.output_line.text())
+            if self.first_value != 0:
+                self.first_value += int(self.output_line.text())
+            else:
+                self.first_value = int(self.output_line.text())
+            
             self.prev_operation = operation
             self.text = ""
+       
+        #Subtraction
         if operation == "-":
-            self.first_value = int(self.output_line.text())
+            if self.first_value != 0:
+                self.first_value -= int(self.output_line.text())
+            else:
+                self.first_value = int(self.output_line.text())
+            
             self.prev_operation = operation
             self.text = ""
+        
+        #Multiplication
         if operation == "*":
-            self.first_value = int(self.output_line.text())
+            if self.first_value != 0:
+                self.first_value *= int(self.output_line.text())
+            else:
+                self.first_value = int(self.output_line.text())
+            
             self.prev_operation = operation
             self.text = ""
+        
+        #Division
         if operation == "/":
-            self.first_value = int(self.output_line.text())
+            if self.first_value != 0:
+                self.first_value /= int(self.output_line.text())
+            else:
+                self.first_value = int(self.output_line.text())
+            
             self.prev_operation = operation
             self.text = ""
+        
+        #Equation
         if operation == "=":
+            
+            #Addition
             if self.prev_operation == "+":
                 self.prev_operation = operation
                 res = self.first_value + int(self.output_line.text())
                 self.text = str(res)
+                
                 self.output_line.setText(self.text)
+                self.first_value = 0
+            
+            #Subtraction
             if self.prev_operation == "-":
                 self.prev_operation = operation
                 res = self.first_value - int(self.output_line.text())
                 self.text = str(res)
+
                 self.output_line.setText(self.text)
+                self.first_value = 0
+            
+            #Multiplication
             if self.prev_operation == "*":
                 self.prev_operation = operation
                 res = self.first_value * int(self.output_line.text())
                 self.text = str(res)
+                
                 self.output_line.setText(self.text)
+                self.first_value = 0
+            
+            #Division
             if self.prev_operation == "/":
                 self.prev_operation = operation
                 res = self.first_value / int(self.output_line.text())
                 self.text = str(res)
+                
                 self.output_line.setText(self.text)
+                self.first_value = 0
             
     def _clear_text(self) -> None:
         """Clears calculator screen
         """
         
         self.text = ""
+        self.first_value = 0
         self.output_line.setText(self.text)
         
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
     main_window = MainWindow()
     main_window.show()  
     sys.exit(app.exec())
