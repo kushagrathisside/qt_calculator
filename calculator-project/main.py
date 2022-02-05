@@ -4,7 +4,7 @@ import sys
 
 #Third-Party Modules
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QApplication, QGridLayout, QLineEdit, 
+from PyQt6.QtWidgets import (QApplication, QGridLayout, QLabel, 
                              QVBoxLayout, QPushButton, QWidget)
 from PyQt6.QtGui import QFont, QIcon
 
@@ -48,15 +48,23 @@ class MainWindow(QWidget):
         
         vbox = QVBoxLayout()
         self.text = ""
+        self.log = ""
         
-        self.output_line = QLineEdit(self.text)
-        self.output_line.setFixedSize(300, 80)
-        self.output_line.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
-        self.output_line.setFont(QFont("Times", 14))
-        self.output_line.setReadOnly(True)
+        self.log_line = QLabel(self.log)
+        self.log_line.setFixedSize(300, 22)
+        self.log_line.setAlignment(Qt.AlignmentFlag.AlignRight 
+                                   | Qt.AlignmentFlag.AlignBottom)
+        self.log_line.setFont(QFont("Times", 18))
+        
+        self.output_line = QLabel(self.text)
+        self.output_line.setFixedSize(300, 40)
+        self.output_line.setAlignment(Qt.AlignmentFlag.AlignRight 
+                                      | Qt.AlignmentFlag.AlignBottom)
+        self.output_line.setFont(QFont("Times", 30))
         
         grid = self._grid_layout()
         
+        vbox.addWidget(self.log_line)
         vbox.addWidget(self.output_line)
         vbox.addLayout(grid)
         vbox.setContentsMargins(10, 10, 10, 10)
@@ -162,13 +170,20 @@ class MainWindow(QWidget):
         
         if self.prev_operation == "=":
             self.text = ""
+            self.log = ""
+            
             self.prev_operation = ""
+            
             self.text += number
+            self.log += number
         else:
-            self.text += number     
+            self.text += number
+            self.log += number     
             if self.text[0] == "0":
                 self.text = self.text[1:]
+                self.log = self.log[1:]
         
+        self.log_line.setText(self.log)
         self.output_line.setText(self.text)
         
     def _operation(self, operation: str) -> None:
@@ -189,6 +204,9 @@ class MainWindow(QWidget):
             
             self.prev_operation = operation
             self.text = ""
+            
+            self.log += operation
+            self.log_line.setText(self.log)
        
         #Subtraction
         if operation == "-":
@@ -199,6 +217,9 @@ class MainWindow(QWidget):
             
             self.prev_operation = operation
             self.text = ""
+            
+            self.log += operation
+            self.log_line.setText(self.log)
         
         #Multiplication
         if operation == "*":
@@ -209,6 +230,9 @@ class MainWindow(QWidget):
             
             self.prev_operation = operation
             self.text = ""
+            
+            self.log += operation
+            self.log_line.setText(self.log)
         
         #Division
         if operation == "/":
@@ -219,9 +243,15 @@ class MainWindow(QWidget):
             
             self.prev_operation = operation
             self.text = ""
+            
+            self.log += operation
+            self.log_line.setText(self.log)
         
         #Equation
         if operation == "=":
+            
+            self.log += operation
+            self.log_line.setText(self.log)
             
             #Addition
             if self.prev_operation == "+":
@@ -264,8 +294,11 @@ class MainWindow(QWidget):
         """
         
         self.text = ""
+        self.log = ""
         self.first_value = 0
+        
         self.output_line.setText(self.text)
+        self.log_line.setText(self.log)
         
 
 if __name__ == "__main__":
