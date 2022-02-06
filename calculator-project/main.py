@@ -24,6 +24,7 @@ class MainWindow(QWidget):
         
         self.prev_operation = ""
         self.first_value = 0
+        self.is_float = False
         
         self._window_settings()
         
@@ -37,7 +38,7 @@ class MainWindow(QWidget):
         
         self.setWindowIcon(QIcon("icons/calculator.png"))
         self.setWindowTitle("Калькулятор Morrison")
-        self.setFixedSize(320, 340)
+        self.setFixedSize(330, 400)
         
     def _main_layout(self) -> QVBoxLayout:
         """Calculator's Window Layout
@@ -93,23 +94,26 @@ class MainWindow(QWidget):
         zero_btn = self._numbers_btns_init(0)
         
         #Sign Buttons
-        add_btn, sub_btn, mult_btn, \
-            div_btn, equal_btn, clear_btn = self._sign_btns_init()
+        add_btn, sub_btn, mult_btn, div_btn, equal_btn,\
+            pos_neg_btn, prcnt_btn, clear_btn, ce_btn,\
+                dot_btn = self._sign_btns_init()
         
         #Adding Buttons to a Grid
-        buttons = [one_btn, two_btn, three_btn, add_btn,
-                   four_btn, five_btn, six_btn, sub_btn,
-                   seven_btn, eight_btn, nine_btn, mult_btn,
-                   clear_btn, zero_btn, equal_btn, div_btn]
+        buttons = [prcnt_btn, ce_btn, clear_btn, add_btn,
+                   one_btn, two_btn, three_btn, sub_btn,
+                   four_btn, five_btn, six_btn, mult_btn,
+                   seven_btn, eight_btn, nine_btn, div_btn,
+                   pos_neg_btn, zero_btn, dot_btn, equal_btn]
         
         count = 0
-        for row in range(0, 4):
+        for row in range(0, 5):
             for col in range(0, 4):
                 grid.addWidget(buttons[row + col + count], row, col)
             count += 3
         
         return grid
 
+    #Button Initializers
     def _sign_btns_init(self) -> QPushButton:
         """Creating buttons for signs
 
@@ -123,12 +127,31 @@ class MainWindow(QWidget):
         div_btn = self._op_btns_init("/")  
         equal_btn = self._op_btns_init("=")
         
+        pos_neg_btn = QPushButton("\u00B1")
+        pos_neg_btn.setMinimumSize(75, 50)
+        pos_neg_btn.clicked.connect(self._toggle_pos_neg)
+        
+        dot_btn = QPushButton(".")
+        dot_btn.setMinimumSize(75, 50)
+        dot_btn.clicked.connect(self._turn_to_float)
+        
+        prcnt_btn = QPushButton("%")
+        prcnt_btn.setMinimumSize(75, 50)
+        prcnt_btn.clicked.connect(self._turn_to_percentage)
+        
         clear_btn = QPushButton("C")
         clear_btn.setMinimumSize(75, 50)
         clear_btn.clicked.connect(self._clear_text)
         
-        return add_btn, sub_btn, mult_btn, div_btn, equal_btn, clear_btn
+        ce_btn = QPushButton("CE")
+        ce_btn.setMinimumSize(75, 50)
+        ce_btn.clicked.connect(self._clear_output)
+        
+        return add_btn, sub_btn, mult_btn, div_btn, equal_btn,\
+            pos_neg_btn, prcnt_btn, clear_btn, ce_btn,\
+            dot_btn
 
+    #Operation Buttons Initializer
     def _op_btns_init(self, operation: str) -> QPushButton:
         """Handles operation buttons
 
@@ -141,10 +164,11 @@ class MainWindow(QWidget):
         
         op_btn = QPushButton(operation)
         op_btn.setMinimumSize(75, 50)
-        op_btn.clicked.connect(lambda: self._operation(op_btn.text()))
+        op_btn.clicked.connect(lambda: self._operations_handler(op_btn.text()))
         
         return op_btn
     
+    #Number Buttons Initializer
     def _numbers_btns_init(self, number: int) -> QPushButton:
         """Handles number buttons creation
 
@@ -160,6 +184,65 @@ class MainWindow(QWidget):
         num_btn.clicked.connect(lambda: self._add_numbers(num_btn.text()))
         
         return num_btn
+
+    #
+    def _turn_to_float(self):
+        """Turns number to float
+        """
+        if self.prev_operation == "=":
+            self.prev_operation = "."
+            self._initial_float()
+        
+        if not self.is_float:
+            if self.text:
+                self.text += "."
+                self.log += "."
+                
+                self.output_line.setText(self.text)
+                self.log_line.setText(self.log)
+                
+                self.is_float = True
+            else:
+                self._initial_float()
+
+    def _initial_float(self):
+        self.text = "0."
+        self.log = "0."
+                
+        self.output_line.setText(self.text)
+        self.log_line.setText(self.log)
+                
+        self.is_float = True
+        
+    def _turn_to_percentage(self):
+        """Turns number to percentage
+        """
+        if self.text:
+            if not self.is_float:
+                percentage = int(self.text) / 100
+            else:
+                percentage = float(self.text) / 100
+            
+            self.is_float = True
+            self.text = str(percentage)
+            self.log = str(percentage)
+            
+            self.output_line.setText(self.text)
+            self.log_line.setText(self.log)
+    
+    def _toggle_pos_neg(self):
+        if self.text:
+            if not self.is_float:
+                neg_number = -(int(self.text))
+            else:
+                neg_number = -(float(self.text))
+            
+            self.text = str(neg_number)
+            self.log = str(neg_number)
+            
+            self.output_line.setText(self.text)
+            self.log_line.setText(self.log)
+            
     
     def _add_numbers(self, number: str) -> None:
         """Adding numbers to the calculator screen
@@ -171,22 +254,24 @@ class MainWindow(QWidget):
         if self.prev_operation == "=":
             self.text = ""
             self.log = ""
+            self.is_float = False
             
             self.prev_operation = ""
             
             self.text += number
-            self.log += number
+            self.log += number        
         else:
             self.text += number
             self.log += number     
             if self.text[0] == "0":
-                self.text = self.text[1:]
-                self.log = self.log[1:]
+                if not self.is_float:
+                    self.text = self.text[1:]
+                    self.log = self.log[1:]
         
         self.log_line.setText(self.log)
         self.output_line.setText(self.text)
         
-    def _operation(self, operation: str) -> None:
+    def _operations_handler(self, operation: str) -> None:
         """Handles arithmetic operations
 
         Args:
@@ -198,65 +283,71 @@ class MainWindow(QWidget):
         #Addition
         if operation == "+":
             if self.first_value != 0:
-                self.first_value += int(self.output_line.text())
+                if not self.is_float:
+                    self.first_value += int(self.output_line.text())
+                else:
+                    self.first_value += float(self.output_line.text())
             else:
-                self.first_value = int(self.output_line.text())
+                self._check_float()
             
-            self.prev_operation = operation
-            self.text = ""
-            
-            self.log += operation
-            self.log_line.setText(self.log)
+            self._op_set_values(operation)
        
         #Subtraction
         if operation == "-":
             if self.first_value != 0:
-                self.first_value -= int(self.output_line.text())
+                if not self.is_float:
+                    self.first_value -= int(self.output_line.text())
+                else:
+                    self.first_value -= float(self.output_line.text())
             else:
-                self.first_value = int(self.output_line.text())
+                self._check_float()
             
-            self.prev_operation = operation
-            self.text = ""
-            
-            self.log += operation
-            self.log_line.setText(self.log)
+            self._op_set_values(operation)
         
         #Multiplication
         if operation == "*":
             if self.first_value != 0:
-                self.first_value *= int(self.output_line.text())
+                if not self.is_float:
+                    self.first_value *= int(self.output_line.text())
+                else:
+                    self.first_value *= float(self.output_line.text())
             else:
-                self.first_value = int(self.output_line.text())
+                self._check_float()
             
-            self.prev_operation = operation
-            self.text = ""
-            
-            self.log += operation
-            self.log_line.setText(self.log)
+            self._op_set_values(operation)
         
         #Division
         if operation == "/":
             if self.first_value != 0:
-                self.first_value /= int(self.output_line.text())
+                if not self.is_float:
+                    self.first_value /= int(self.output_line.text())
+                else:
+                    self.first_value /= float(self.output_line.text())
             else:
-                self.first_value = int(self.output_line.text())
+                self._check_float()
             
-            self.prev_operation = operation
-            self.text = ""
-            
-            self.log += operation
-            self.log_line.setText(self.log)
+            self._op_set_values(operation)
         
         #Equation
         if operation == "=":
-            
-            self.log += operation
-            self.log_line.setText(self.log)
+            #Check for Equation sign
+            if self.log[-1] == "=":
+                self.log_line.setText(self.log)
+            elif self.log[-1] != self.prev_operation:
+                self.log += operation
+                self.log_line.setText(self.log)
+            else:
+                self.log += str(self.first_value)
+                self.log += operation
+                self.log_line.setText(self.log)
             
             #Addition
             if self.prev_operation == "+":
                 self.prev_operation = operation
-                res = self.first_value + int(self.output_line.text())
+                if not self.is_float:
+                    res = self.first_value + int(self.output_line.text())
+                else:
+                    res = self.first_value + float(self.output_line.text())
                 self.text = str(res)
                 
                 self.output_line.setText(self.text)
@@ -265,7 +356,10 @@ class MainWindow(QWidget):
             #Subtraction
             if self.prev_operation == "-":
                 self.prev_operation = operation
-                res = self.first_value - int(self.output_line.text())
+                if not self.is_float:
+                    res = self.first_value - int(self.output_line.text())
+                else:
+                    res = self.first_value - float(self.output_line.text())
                 self.text = str(res)
 
                 self.output_line.setText(self.text)
@@ -274,7 +368,10 @@ class MainWindow(QWidget):
             #Multiplication
             if self.prev_operation == "*":
                 self.prev_operation = operation
-                res = self.first_value * int(self.output_line.text())
+                if not self.is_float:
+                    res = self.first_value * int(self.output_line.text())
+                else:
+                    res = self.first_value * float(self.output_line.text())
                 self.text = str(res)
                 
                 self.output_line.setText(self.text)
@@ -283,11 +380,31 @@ class MainWindow(QWidget):
             #Division
             if self.prev_operation == "/":
                 self.prev_operation = operation
-                res = self.first_value / int(self.output_line.text())
+                if not self.is_float:
+                    res = self.first_value / int(self.output_line.text())
+                else:
+                    res = self.first_value / float(self.output_line.text())
                 self.text = str(res)
                 
                 self.output_line.setText(self.text)
                 self.first_value = 0
+
+    def _check_float(self):
+        if not self.is_float:
+            self.first_value = int(self.output_line.text())
+        else:
+            self.first_value = float(self.output_line.text())
+
+    def _op_set_values(self, operation):
+        self.prev_operation = operation
+        self.text = ""
+        self.is_float = False
+            
+        self.log = str(self.first_value)
+        self.log += operation
+        self.log_line.setText(self.log)
+        self.output_line.setText(str(self.first_value))
+                
             
     def _clear_text(self) -> None:
         """Clears calculator screen
@@ -296,9 +413,18 @@ class MainWindow(QWidget):
         self.text = ""
         self.log = ""
         self.first_value = 0
+        self.is_float = False
         
         self.output_line.setText(self.text)
         self.log_line.setText(self.log)
+        
+    def _clear_output(self) -> None:
+        """Clears output line
+        """
+        self.text = ""
+        self.is_float = False
+        
+        self.output_line.setText(self.text)
         
 
 if __name__ == "__main__":
