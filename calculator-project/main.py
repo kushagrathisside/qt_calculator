@@ -4,10 +4,15 @@ import sys
 
 #Third-Party Modules
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QApplication, QGridLayout, QLabel, 
-                             QVBoxLayout, QPushButton, QWidget)
 from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtWidgets import (QApplication, QGridLayout, QLabel, 
+                             QMenuBar, QPushButton, QVBoxLayout, 
+                             QWidget)
 
+# "\u221A\u1D465" <- square root
+# "\u1D465\N{SUPERSCRIPT TWO}" <- power of two
+# "\u232B" <- Erase
+# "1/\u1D465" <- 1/x
 
 class MainWindow(QWidget):
     """Calculator's Main Window
@@ -25,6 +30,7 @@ class MainWindow(QWidget):
         self.prev_operation = ""
         self.first_value = 0
         self.is_float = False
+        self.clear_log = False
         
         self._window_settings()
         
@@ -123,8 +129,8 @@ class MainWindow(QWidget):
         
         add_btn = self._op_btns_init("+")
         sub_btn = self._op_btns_init("-")
-        mult_btn = self._op_btns_init("*")
-        div_btn = self._op_btns_init("/")  
+        mult_btn = self._op_btns_init("\u00D7")
+        div_btn = self._op_btns_init("\u00F7")  
         equal_btn = self._op_btns_init("=")
         
         pos_neg_btn = QPushButton("\u00B1")
@@ -185,7 +191,7 @@ class MainWindow(QWidget):
         
         return num_btn
 
-    #
+    #Str-to-Float functions
     def _turn_to_float(self):
         """Turns number to float
         """
@@ -230,6 +236,7 @@ class MainWindow(QWidget):
             self.output_line.setText(self.text)
             self.log_line.setText(self.log)
     
+    #Toggle number positivity
     def _toggle_pos_neg(self):
         if self.text:
             if not self.is_float:
@@ -243,7 +250,7 @@ class MainWindow(QWidget):
             self.output_line.setText(self.text)
             self.log_line.setText(self.log)
             
-    
+    #Number buttons functions
     def _add_numbers(self, number: str) -> None:
         """Adding numbers to the calculator screen
 
@@ -251,26 +258,28 @@ class MainWindow(QWidget):
             number (str): Number button text
         """
         
-        if self.prev_operation == "=":
-            self.text = ""
-            self.log = ""
-            self.is_float = False
-            
-            self.prev_operation = ""
-            
-            self.text += number
-            self.log += number        
-        else:
-            self.text += number
-            self.log += number     
-            if self.text[0] == "0":
-                if not self.is_float:
-                    self.text = self.text[1:]
-                    self.log = self.log[1:]
+        if len(self.text) <= 10:
+            if self.prev_operation == "=" or self.clear_log:
+                self.text = ""
+                self.log = ""
+                self.is_float = False
+                self.clear_log = False
+                self.prev_operation = ""
+                
+                self.text += number
+                self.log += number        
+            else:
+                self.text += number
+                self.log += number     
+                if self.text[0] == "0":
+                    if not self.is_float:
+                        self.text = self.text[1:]
+                        self.log = self.log[1:]
         
         self.log_line.setText(self.log)
         self.output_line.setText(self.text)
-        
+    
+    #Arithmetic operations    
     def _operations_handler(self, operation: str) -> None:
         """Handles arithmetic operations
 
@@ -405,7 +414,7 @@ class MainWindow(QWidget):
         self.log_line.setText(self.log)
         self.output_line.setText(str(self.first_value))
                 
-            
+    #Clearing Output QLabel and Log QLabel       
     def _clear_text(self) -> None:
         """Clears calculator screen
         """
@@ -424,9 +433,16 @@ class MainWindow(QWidget):
         self.text = ""
         self.is_float = False
         
+        if self.prev_operation == ""\
+            or self.prev_operation == "=":
+            self.clear_log = True
+        else:
+            self.clear_log = False
+        
         self.output_line.setText(self.text)
         
 
+#Run Application
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
