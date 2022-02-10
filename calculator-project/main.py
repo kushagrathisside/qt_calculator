@@ -121,6 +121,7 @@ class MainWindow(QWidget):
         Returns:
             QPushButton: Buttons
         """
+        
         italic_x = "\N{MATHEMATICAL ITALIC SMALL X}"
         ss_two = "\N{SUPERSCRIPT TWO}"
         
@@ -196,6 +197,15 @@ class MainWindow(QWidget):
         return op_btn
     
     def _func_btns_init(self, label: str, func) -> QPushButton:
+        """Handles initialization of additional buttons
+
+        Args:
+            label (str): Button Label
+            func ([type]): Button Function
+
+        Returns:
+            QPushButton: Button
+        """
         
         func_btn = QPushButton(label)
         func_btn.setMinimumSize(75, 50)
