@@ -41,7 +41,8 @@ class MainWindow(QWidget):
         self.setWindowIcon(QIcon("icons/calculator.png"))
         self.setWindowTitle("Калькулятор Morrison")
         self.setFixedSize(330, 480)
-        
+    
+    # Window Layout
     def _main_layout(self) -> QVBoxLayout:
         """Calculator's Window Layout
 
@@ -114,7 +115,7 @@ class MainWindow(QWidget):
         
         return grid
 
-    #Button Initializers
+    #Buttons Initializers
     def _sign_btns_init(self) -> QPushButton:
         """Creating buttons for signs
 
@@ -165,7 +166,6 @@ class MainWindow(QWidget):
             pos_neg_btn, prcnt_btn, clear_btn, ce_btn,dot_btn,\
                 erase_btn, fraction_btn, pow_two_btn, sqrt_btn
 
-    #Operation Buttons Initializer
     def _op_btns_init(self, operation: str) -> QPushButton:
         """Handles operation buttons
 
