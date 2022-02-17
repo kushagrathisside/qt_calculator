@@ -129,44 +129,114 @@ class ScientificMode:
             QPushButton: Buttons
         """
         
-        italic_x = "\N{MATHEMATICAL ITALIC SMALL X}"
+        it_x = "\N{MATHEMATICAL ITALIC SMALL X}"
+        it_y = "\U0001D466"
+        ss_y = "\N{MODIFIER LETTER SMALL Y}"
+        subs_y = "\u1D67"
+        ss_x = "\N{MODIFIER LETTER SMALL X}"
         ss_two = "\N{SUPERSCRIPT TWO}"
+        ss_three = "\N{SUPERSCRIPT THREE}"
+        next_page = "\u21AA"
+        pi = "\u03C0"
+        cube_root = "\u221B"
+        sq_root = "\u221A"
         
-        #Arithmetic operations
+        # Arithmetic operations
         add_btn = self._op_btns_init("+")
         sub_btn = self._op_btns_init("-")
         mult_btn = self._op_btns_init("\u00D7")
         div_btn = self._op_btns_init("\u00F7")  
         equal_btn = self._op_btns_init("=")
         
-        #Additional operations
+        # Constants
+        e_btn = self._func_btns_init("e", lambda:
+            self.btn_actions.print_e(self.output_line))
+        
+        pi_btn = self._func_btns_init(f"{pi}", lambda:
+            self.btn_actions.print_pi(self.output_line))
+        
+        # Insertions
         pos_neg_btn = self._func_btns_init("\u00B1", lambda: 
-            self.btn_actions._toggle_negativity(self.output_line, self.log_line))
+            self.btn_actions.toggle_negativity(self.output_line, self.log_line))
         
+        lb_btn = self._func_btns_init("(", lambda:
+            self.btn_actions.insert_bracket(self.output_line, self.log_line))
+        
+        rb_btn = self._func_btns_init(")", lambda:
+            self.btn_actions.insert_bracket(self.output_line, self.log_line))
+        
+        #Float operations
         dot_btn = self._func_btns_init(".", lambda: 
-            self.btn_actions._turn_to_float(self.output_line, self.log_line))
+            self.btn_actions.turn_to_float(self.output_line, self.log_line))
         
-        fraction_btn = self._func_btns_init(f"1/{italic_x}", lambda: 
-            self.btn_actions._to_fraction(self.output_line, self.log_line))
-        
-        pow_two_btn = self._func_btns_init(f"{italic_x}{ss_two}", lambda: 
-            self.btn_actions._pow_of_two(self.output_line, self.log_line))
-        
-        sqrt_btn = self._func_btns_init(f"\u221A{italic_x}", lambda: 
-            self.btn_actions._square_root(self.output_line, self.log_line))   
+        fraction_btn = self._func_btns_init(f"1/{it_x}", lambda: 
+            self.btn_actions.to_fraction(self.output_line, self.log_line))
              
         prcnt_btn = self._func_btns_init("%", lambda: 
-            self.btn_actions._turn_to_percentage(self.output_line, self.log_line))
+            self.btn_actions.turn_to_percentage(self.output_line, self.log_line))
         
-        #Clear buttons
+        # Advanced operations
+        factorial_btn = self._func_btns_init("\U0001D48F!", lambda:
+            self.btn_actions.factorial(self.output_line, self.log_line))
+        
+        mod_btn = self._func_btns_init("mod", lambda:
+            self.btn_actions.modulo(self.output_line, self.log_line))
+        
+        exp_btn = self._func_btns_init("exp", lambda:
+            self.btn_actions.exponent(self.output_line, self.log_line))
+        
+        abs_btn = self._func_btns_init(f"|{it_x}|", lambda:
+            self.btn_actions.absolute(self.output_line, self.log_line))
+        
+        # Powers and Roots
+        two_to_x_btn = self._func_btns_init(f"2{ss_x}", lambda:
+            self.btn_actions.two_to_x(self.output_line, self.log_line))
+        
+        ten_to_x_btn = self._func_btns_init(f"10{ss_x}", lambda:
+            self.btn_actions.ten_to_x(self.output_line, self.log_line))
+        
+        e_to_x_btn = self._func_btns_init(f"e{ss_x}", lambda:
+            self.btn_actions.e_to_x(self.output_line, self.log_line))
+        
+        pow_two_btn = self._func_btns_init(f"{it_x}{ss_two}", lambda: 
+            self.btn_actions.pow_of_two(self.output_line, self.log_line))
+        
+        pow_three_btn = self._func_btns_init(f"{it_x}{ss_three}", lambda:
+            self.btn_actions.pow_of_three(self.output_line, self.log_line))
+        
+        pow_y_btn = self._func_btns_init(f"{it_x}{ss_y}", lambda:
+            self.btn_actions.pow_of_y(self.output_line, self.log_line))
+        
+        sqrt_btn = self._func_btns_init(f"{sq_root}{it_x}", lambda: 
+            self.btn_actions.square_root(self.output_line, self.log_line))   
+        
+        cubedrt_btn = self._func_btns_init(f"{cube_root}{it_x}", lambda:
+            self.btn_actions.cubed_root(self.output_line, self.log_line))
+        
+        yroot_btn = self._func_btns_init(f"{it_y}{sq_root}{it_x}", lambda:
+            self.btn_actions.yroot(self.output_line, self.log_line))
+        
+        #Logarithms
+        log_btn = self._func_btns_init("log", lambda:
+            self.btn_actions.log(self.output_line, self.log_line))
+        
+        nat_log_btn = self._func_btns_init("ln", lambda:
+            self.btn_actions.nat_log(self.output_line, self.log_line))
+        
+        log_y_btn = self._func_btns_init(f"log{subs_y}{it_x}", lambda:
+            self.btn_actions.log_y(self.output_line, self.log_line))
+        
+        # Functional buttons
+        next_page_btn = self._func_btns_init(f"{next_page}")
+        
         clear_btn = self._func_btns_init("C", lambda: 
-            self.btn_actions._clear_text(self.output_line, self.log_line))
+            self.btn_actions.clear_text(self.output_line, self.log_line))
         
         ce_btn = self._func_btns_init("CE", lambda: 
-            self.btn_actions._clear_output(self.output_line))
+            self.btn_actions.clear_output(self.output_line))
         
         erase_btn = self._func_btns_init("\u232B", lambda: 
-            self.btn_actions._erase(self.output_line, self.log_line))
+            self.btn_actions.erase(self.output_line, self.log_line))
         
         return add_btn, sub_btn, mult_btn, div_btn, equal_btn,\
             pos_neg_btn, prcnt_btn, clear_btn, ce_btn,dot_btn,\

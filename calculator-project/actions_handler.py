@@ -234,7 +234,7 @@ class ActionsHandler:
         out_line.setText(str(self._first_value))
 
     #Str-to-Float functions
-    def _turn_to_float(self, out_line: QLabel, log_line: QLabel) -> None:
+    def turn_to_float(self, out_line: QLabel, log_line: QLabel) -> None:
         """Handles number to float conversion
         """
         
@@ -270,7 +270,7 @@ class ActionsHandler:
                 
         self._is_float = True
         
-    def _turn_to_percentage(self, out_line: QLabel, log_line: QLabel) -> None:
+    def turn_to_percentage(self, out_line: QLabel, log_line: QLabel) -> None:
         """Handles number to percentage conversion
         """
         
@@ -290,7 +290,7 @@ class ActionsHandler:
             log_line.setText(self.log)
     
     #Toggle number positivity
-    def _toggle_negativity(self, out_line: QLabel, log_line: QLabel) -> None:
+    def toggle_negativity(self, out_line: QLabel, log_line: QLabel) -> None:
         """Handles number negativity
 
         Args:
@@ -311,7 +311,7 @@ class ActionsHandler:
             log_line.setText(self.log)
     
     #Fraction
-    def _to_fraction(self, out_line: QLabel, log_line: QLabel) -> None:
+    def to_fraction(self, out_line: QLabel, log_line: QLabel) -> None:
         """Handles number to fraction conversion
 
         Args:
@@ -332,7 +332,7 @@ class ActionsHandler:
             log_line.setText(self.log)
     
     #Power of Two
-    def _pow_of_two(self, out_line: QLabel, log_line: QLabel) -> None:
+    def pow_of_two(self, out_line: QLabel, log_line: QLabel) -> None:
         """Handles output of number to the power of two
 
         Args:
@@ -356,7 +356,7 @@ class ActionsHandler:
             log_line.setText(self.log)
         
     #Square Root of a Number
-    def _square_root(self, out_line: QLabel, log_line: QLabel) -> None:
+    def square_root(self, out_line: QLabel, log_line: QLabel) -> None:
         """Handles output of number's square root
 
         Args:
@@ -400,7 +400,7 @@ class ActionsHandler:
             self.text = str(res)
     
     #Clearing Output QLabel and Log QLabel       
-    def _clear_text(self, out_line: QLabel, log_line: QLabel) -> None:
+    def clear_text(self, out_line: QLabel, log_line: QLabel) -> None:
         """Clears calculator screen
         """
         
@@ -412,7 +412,7 @@ class ActionsHandler:
         out_line.setText(self.text)
         log_line.setText(self.log)
         
-    def _clear_output(self, out_line: QLabel) -> None:
+    def clear_output(self, out_line: QLabel) -> None:
         """Clears output line
         """
         
@@ -427,7 +427,7 @@ class ActionsHandler:
         
         out_line.setText(self.text)
         
-    def _erase(self, out_line: QLabel, log_line: QLabel) -> None:
+    def erase(self, out_line: QLabel, log_line: QLabel) -> None:
         """Erases one digit at a time
 
         Args:

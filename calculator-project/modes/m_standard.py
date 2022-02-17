@@ -141,32 +141,32 @@ class StandardMode:
         
         #Additional operations
         pos_neg_btn = self._func_btns_init("\u00B1", lambda: 
-            self.btn_actions._toggle_negativity(self.output_line, self.log_line))
+            self.btn_actions.toggle_negativity(self.output_line, self.log_line))
         
         dot_btn = self._func_btns_init(".", lambda: 
-            self.btn_actions._turn_to_float(self.output_line, self.log_line))
+            self.btn_actions.turn_to_float(self.output_line, self.log_line))
         
         fraction_btn = self._func_btns_init(f"1/{italic_x}", lambda: 
-            self.btn_actions._to_fraction(self.output_line, self.log_line))
+            self.btn_actions.to_fraction(self.output_line, self.log_line))
         
         pow_two_btn = self._func_btns_init(f"{italic_x}{ss_two}", lambda: 
-            self.btn_actions._pow_of_two(self.output_line, self.log_line))
+            self.btn_actions.pow_of_two(self.output_line, self.log_line))
         
         sqrt_btn = self._func_btns_init(f"\u221A{italic_x}", lambda: 
-            self.btn_actions._square_root(self.output_line, self.log_line))   
+            self.btn_actions.square_root(self.output_line, self.log_line))   
              
         prcnt_btn = self._func_btns_init("%", lambda: 
-            self.btn_actions._turn_to_percentage(self.output_line, self.log_line))
+            self.btn_actions.turn_to_percentage(self.output_line, self.log_line))
         
         #Clear buttons
         clear_btn = self._func_btns_init("C", lambda: 
-            self.btn_actions._clear_text(self.output_line, self.log_line))
+            self.btn_actions.clear_text(self.output_line, self.log_line))
         
         ce_btn = self._func_btns_init("CE", lambda: 
-            self.btn_actions._clear_output(self.output_line))
+            self.btn_actions.clear_output(self.output_line))
         
         erase_btn = self._func_btns_init("\u232B", lambda: 
-            self.btn_actions._erase(self.output_line, self.log_line))
+            self.btn_actions.erase(self.output_line, self.log_line))
         
         return add_btn, sub_btn, mult_btn, div_btn, equal_btn,\
             pos_neg_btn, prcnt_btn, clear_btn, ce_btn,dot_btn,\
