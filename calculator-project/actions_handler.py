@@ -1,4 +1,4 @@
-from math import sqrt
+import math
 
 
 from PyQt6.QtWidgets import QLabel
@@ -33,7 +33,9 @@ class ActionsHandler:
             number (str): Number button text
         """
         
-        op_flags = ["=", "1/x", "%", "pow", "sqrt"]
+        op_flags = ["=", "1/x", "%", "pow", "root",
+                    "fac", "2x", "10x", "exp", "log", 
+                    "three"]
         
         if len(self.text) <= 12:
             if self._prev_operation in op_flags or self._clear_log:
@@ -67,7 +69,7 @@ class ActionsHandler:
         """
         
         if self.text:
-            #Addition
+            # Addition
             if operation == "+":
                 if self._first_value != 0:
                     self._check_operations(operation, out_line)
@@ -76,7 +78,7 @@ class ActionsHandler:
                 
                 self._op_set_values(operation, out_line, log_line)
         
-            #Subtraction
+            # Subtraction
             if operation == "-":
                 if self._first_value != 0:
                     self._check_operations(operation, out_line)
@@ -85,7 +87,7 @@ class ActionsHandler:
                 
                 self._op_set_values(operation, out_line, log_line)
             
-            #Multiplication
+            # Multiplication
             if operation == "*":
                 if self._first_value != 0:
                     self._check_operations(operation, out_line)
@@ -94,7 +96,7 @@ class ActionsHandler:
                 
                 self._op_set_values(operation, out_line, log_line)
             
-            #Division
+            # Division
             if operation == "/":
                 if self._first_value != 0:
                     self._check_operations(operation, out_line)
@@ -103,7 +105,42 @@ class ActionsHandler:
                 
                 self._op_set_values(operation, out_line, log_line)
             
-            #Equation
+            if operation == "mod":
+                if self._first_value != 0:
+                    self._check_operations(operation, out_line)
+                else:
+                    self._check_float(out_line)
+                
+                self._op_set_values(operation, out_line, log_line)
+            
+            # Root
+            if operation == "yroot":
+                if self._first_value != 0:
+                    self._check_operations(operation, out_line)
+                else:
+                    self._check_float(out_line)
+                
+                self._op_set_values(operation, out_line, log_line)
+            
+            # Power
+            if operation == "ypow":
+                if self._first_value != 0:
+                    self._check_operations(operation, out_line)
+                else:
+                    self._check_float(out_line)
+                
+                self._op_set_values(operation, out_line, log_line)
+            
+            # Logarithm
+            if operation == "ylog":
+                if self._first_value != 0:
+                    self._check_operations(operation, out_line)
+                else:
+                    self._check_float(out_line)
+                
+                self._op_set_values(operation, out_line, log_line)
+            
+            # Equation
             if operation == "=":
                 #Check for Equation sign
                 if self._first_value != 0:
@@ -159,6 +196,30 @@ class ActionsHandler:
                 self._first_value /= float(out_line.text())
             else:
                 self._first_value /= int(out_line.text())
+        
+        elif operation == "mod":
+            if self._is_float:
+                self._first_value %= float(self.text)
+            else:
+                self._first_value %= int(self.text)
+        
+        elif operation == "ylog":
+            if self._is_float:
+                self._first_value = float(self.text)
+            else:
+                self._first_value = int(self.text)
+                
+        elif operation == "ypow":
+            if self._is_float:
+                self._first_value = float(self.text)
+            else:
+                self._first_value = int(self.text)
+                
+        elif operation == "yroot":
+            if self._is_float:
+                self._first_value = float(self.text)
+            else:
+                self._first_value = int(self.text)
     
     def _check_result(self, out_line: QLabel) -> int:
         """Handles result float check and performs type sensitivie
@@ -201,6 +262,34 @@ class ActionsHandler:
             else:
                 res = self._first_value / int(out_line.text())
             return res
+
+        if self._prev_operation == "mod":
+            if self._is_float:
+                res = self._first_value % float(out_line.text())
+            else:
+                res = self._first_value % int(out_line.text())
+            return res
+        
+        if self._prev_operation == "yroot":
+            if self._is_float:
+                res = self._first_value ** (1 / float(self.text))
+            else:
+                res = self._first_value ** (1 / int(self.text))
+            return res
+        
+        if self._prev_operation == "ylog":
+            if self._is_float:
+                res = round(math.log(self._first_value, float(self.text)), 2)
+            else:
+                res = round(math.log(self._first_value, int(self.text)), 2)
+            return res
+        
+        if self._prev_operation == "ypow":
+            if self._is_float:
+                res = round(pow(self._first_value, float(self.text)), 2)
+            else:
+                res = round(pow(self._first_value, int(self.text)), 2)
+            return res
       
     def _check_float(self, out_line: QLabel) -> None:
         
@@ -225,11 +314,18 @@ class ActionsHandler:
             
         self.log = str(self._first_value)
         if operation == "*":
-            self.log += "\u00D7"
+            self.log += " \u00D7 "
         elif operation == "/":
-            self.log += "\u00F7"
+            self.log += " \u00F7 "
+        elif operation == "ypow":
+            self.log += " ^ "
+        elif operation == "ylog":
+            self.log += " log base "
+        elif operation == "yroot":
+            self.log += "\u221A"
         else:
-            self.log += operation
+            self.log += f" {operation} "
+        
         log_line.setText(self.log)
         out_line.setText(str(self._first_value))
 
@@ -342,9 +438,9 @@ class ActionsHandler:
         
         if self.text:
             if self._is_float:
-                res = round(float(self.text) ** 2)  
+                res = round(float(self.text) ** 2, 2)  
             else:
-                res = round(int(self.text) ** 2)
+                res = round(int(self.text) ** 2, 2)
             
             self._sci_notation(res)
             
@@ -366,13 +462,13 @@ class ActionsHandler:
         
         if self.text:
             if self._is_float:
-                self.text = str(round(sqrt(float(self.text)), 2))
+                self.text = str(round(math.sqrt(float(self.text)), 2))
             else:
-                self.text = str(round(sqrt(int(self.text)), 2))
+                self.text = str(round(math.sqrt(int(self.text)), 2))
                 
             self.log = self.text
             self._check_dot()
-            self._prev_operation = "sqrt"
+            self._prev_operation = "root"
             
             out_line.setText(self.text)
             log_line.setText(self.log)
@@ -382,6 +478,7 @@ class ActionsHandler:
         """Checks if there is dot in the Output Line
         """
         
+
         if "." in self.text:
             self._is_float = True
             
@@ -438,5 +535,311 @@ class ActionsHandler:
         self.text = self.text[:-1]
         self.log = self.log[:-1]
         
+        out_line.setText(self.text)
+        log_line.setText(self.log)
+        
+    def insert_bracket(self, bracket: str, log_line: QLabel) -> None:
+        """Inserts brackets into the log line
+
+        Args:
+            bracket (str): Bracket symbol
+            log_line (QLabel): Log line
+        """
+        
+        if bracket == "(":
+            self.log += "("
+        else:
+            self.log += ")"
+        
+        log_line.setText(self.log) 
+        
+    def factorial(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Handles factorial button action
+
+        Args:
+            out_line (QLabel): Outputl Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if not self._is_float:
+                res = self._factorial(int(self.text))
+            
+            self._sci_notation(res)
+            self._prev_operation = "fac"
+            self._check_dot()
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+            
+    def _factorial(self, number: int) -> int:
+        """Returns factorial of a number
+
+        Args:
+            number (int): Number
+
+        Returns:
+            int: Answer
+        """
+        
+        if number == 0:
+            return 1
+        else:
+            return number * self._factorial(number - 1)
+        
+    def absolute(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Handles absolute numbers
+
+        Args:
+            out_line (QLabel): Output Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if self._is_float:
+                self.text = str(abs(float(self.text)))
+            else:
+                self.text = str(abs(int(self.text)))
+            
+            self.log = self.text
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+        
+    def logarithm(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Outputs a logarithm of a number with base 10
+
+        Args:
+            out_line (QLabel): Output Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if self._is_float:
+                res = round(math.log(float(self.text), 10), 2)
+            else:
+                res = round(math.log(int(self.text), 10), 2)
+            
+            self._sci_notation(res)
+            
+            self.log = self.text
+            self._prev_operation = "log"
+            self._check_dot()
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+    
+    def nat_log(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Outputs a natural logarithm of a number
+
+        Args:
+            out_line (QLabel): Output Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if self._is_float:
+                res = round(math.log(float(self.text)), 2)
+            else:
+                res = round(math.log(int(self.text)), 2)
+            
+            self._sci_notation(res)
+            
+            self.log = self.text
+            self._prev_operation = "log"
+            self._check_dot()
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+      
+    def two_to_x(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Outputs 2 to the power of a number
+
+        Args:
+            out_line (QLabel): Output Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if self._is_float:
+                res = 2 ** float(self.text)
+            else:
+                res = 2 ** int(self.text)
+            
+            self._sci_notation(res)
+            
+            self.log = self.text
+            self._prev_operation = "2x"
+            self._check_dot()
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+        
+    def ten_to_x(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Outputs 10 to the power of a number
+
+        Args:
+            out_line (QLabel): Output Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if self._is_float:
+                res = 10 ** float(self.text)
+            else:
+                res = 10 ** int(self.text)
+            
+            self._sci_notation(res)
+            
+            self.log = self.text
+            self._prev_operation = "10x"
+            self._check_dot()
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+        
+    def e_to_x(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Outputs e to the power of a number
+
+        Args:
+            out_line (QLabel): Output Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if self._is_float:
+                res = math.e ** float(self.text)
+            else:
+                res = math.e ** int(self.text)
+            
+            self._sci_notation(res)
+            
+            self.log = self.text
+            self._prev_operation = "ex"
+            self._check_dot()
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+        
+    def pow_of_three(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Outputs number to the power of three
+
+        Args:
+            out_line (QLabel): Output Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if self._is_float:
+                res = round(float(self.text) ** 3, 2)
+            else:
+                res = round(int(self.text) ** 3, 2)
+            
+            self._sci_notation(res)
+            
+            self.log = self.text
+            self._prev_operation = "three"
+            self._check_dot()
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+        
+    def cubed_root(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Outputs a cubic root of a number
+
+        Args:
+            out_line (QLabel): _description_
+            log_line (QLabel): _description_
+        """
+        
+        if self.text:
+            if self._is_float:
+                if float(self.text) < 0:
+                    self.text = abs(float(self.text))
+                    self.text = str(round(self.text ** 1/3, 2))
+                else:
+                    self.text = str(round(float(self.text) ** 1/3, 2))
+            else:
+                if int(self.text) < 0:
+                    self.text = abs(int(self.text))
+                    self.text = str(round(int(self.text) ** 1/3, 2))
+                else:
+                    self.text = str(round(int(self.text) ** 1/3, 2)) 
+             
+            self.log = self.text
+            self._check_dot()
+            self._prev_operation = "root"
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+             
+    def exponent(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Handles exponent of a number
+
+        Args:
+            out_line (QLabel): Output Label
+            log_line (QLabel): Log Label
+        """
+        
+        if self.text:
+            if self._is_float:
+                res = math.exp(float(self.text))
+            else:
+                res = math.exp(int(self.text))
+            
+            self._sci_notation(res)
+            
+            self.log = self.text
+            self._prev_operation = "exp"
+            self._check_dot()
+            
+            out_line.setText(self.text)
+            log_line.setText(self.log)
+            
+    def print_pi(self, out_line: QLabel, log_line: QLabel) -> None:
+        
+        op_flags = ["=", "1/x", "%", "pow", "root",
+                    "fac", "2x", "10x", "exp", "log", 
+                    "three"]
+        
+        pi = round(math.pi, 5)
+        
+        if self._prev_operation in op_flags or self._clear_log:
+            self.text = str(pi)
+            self.log = str(pi)
+            
+            self._is_float = True
+            self._clear_log = False
+            self._prev_operation = ""        
+        else:
+            self.text = str(pi)
+            self.log += str(pi)
+            
+            self._is_float = True
+        
+        out_line.setText(self.text)
+        log_line.setText(self.log)
+
+    def print_e(self, out_line: QLabel, log_line: QLabel) -> None:
+        
+        op_flags = ["=", "1/x", "%", "pow", "root",
+                    "fac", "2x", "10x", "exp", "log", 
+                    "three"]
+        
+        e = round(math.e, 5)
+        
+        if self._prev_operation in op_flags or self._clear_log:
+            self.text = str(e)
+            self.log = str(e)
+            
+            self._is_float = True
+            self._clear_log = False
+            self._prev_operation = ""        
+        else:
+            self.text = str(e)
+            self.log += str(e)
+            
+            self._is_float = True
+            
         out_line.setText(self.text)
         log_line.setText(self.log)

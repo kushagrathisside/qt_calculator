@@ -1,14 +1,14 @@
-#Standard Modules
+# Standard Modules
 import sys
 
 
-#Third-Party Modules
+# Third-Party Modules
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import (QApplication, QWidget)
 
 
-from actions_handler import ActionsHandler
+# Local Modules
 from modes.m_standard import StandardMode
 from modes.m_scientific import ScientificMode
 
@@ -30,7 +30,7 @@ class MainWindow(QWidget):
         m_scientific = ScientificMode()
         
         # Public Variables
-        self.curr_mode = "Standard"
+        self.curr_mode = "Scientific"
         
         # Startup Mode
         if self.curr_mode == "Standard":
@@ -39,7 +39,7 @@ class MainWindow(QWidget):
             m_scientific.set_window(self)
         
 
-#Run Application
+# Run Application
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
