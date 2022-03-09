@@ -34,7 +34,7 @@ class ActionsHandler:
         """
         
         op_flags = ["=", "1/x", "%", "pow", "root",
-                    "fac", "2x", "10x", "exp", "log", 
+                    "fac", "2x", "10x", "ex", "log", 
                     "three"]
         
         if len(self.text) <= 12:
@@ -565,12 +565,17 @@ class ActionsHandler:
             if not self._is_float:
                 res = self._factorial(int(self.text))
             
-            self._sci_notation(res)
+                self._sci_notation(res)
+                self._check_dot()
+                
+                out_line.setText(self.text)
+                log_line.setText(self.log)
+            else:
+                self.log = "Only integers!"
+                
+                log_line.setText(self.log)
+                
             self._prev_operation = "fac"
-            self._check_dot()
-            
-            out_line.setText(self.text)
-            log_line.setText(self.log)
             
     def _factorial(self, number: int) -> int:
         """Returns factorial of a number

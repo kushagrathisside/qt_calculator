@@ -1,3 +1,6 @@
+from collections.abc import Callable
+
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon, QFont
 from PyQt6.QtWidgets import (QLabel, QGridLayout, QMenuBar,
@@ -13,6 +16,8 @@ class ScientificMode:
         """
         
         self.btn_actions = ActionsHandler()
+        
+        self.curr_page = 0
         
     def set_window(self, window: QWidget) -> None:
         """Set up the window
@@ -53,12 +58,12 @@ class ScientificMode:
         
         menu_bar = self._menu_bar()
         
-        grid = self._grid_layout()
+        self.grid = self._grid_layout()
         
         vbox.addWidget(menu_bar)
         vbox.addWidget(self.log_line)
         vbox.addWidget(self.output_line)
-        vbox.addLayout(grid)
+        vbox.addLayout(self.grid)
         vbox.setContentsMargins(10, 10, 10, 10)
         
         return vbox
@@ -124,19 +129,30 @@ class ScientificMode:
             erase_btn = self._additional_btns_init()
         
         #Adding Buttons to a Grid
-        first_page = [next_page_btn, pi_btn, e_btn, clear_btn, erase_btn,
-                      pow_two_btn, fraction_btn, abs_btn, exp_btn, mod_btn,
-                      sqrt_btn, lb_btn, rb_btn, factorial_btn, div_btn,
-                      pow_y_btn, one_btn, two_btn, three_btn, mult_btn,
-                      ten_to_x_btn, four_btn, five_btn, six_btn, sub_btn,
-                      log_btn, seven_btn, eight_btn, nine_btn, add_btn,
-                      nat_log_btn, pos_neg_btn, zero_btn, dot_btn, equal_btn]
+        main_grid = [pi_btn, e_btn, clear_btn, erase_btn,
+                     fraction_btn, abs_btn, exp_btn, mod_btn,
+                     lb_btn, rb_btn, factorial_btn, div_btn,
+                     one_btn, two_btn, three_btn, mult_btn,
+                     four_btn, five_btn, six_btn, sub_btn,
+                     seven_btn, eight_btn, nine_btn, add_btn,
+                     pos_neg_btn, zero_btn, dot_btn, equal_btn]
+        
+        self.alternating_btns = [pow_two_btn, sqrt_btn, pow_y_btn,
+                                ten_to_x_btn, log_btn, nat_log_btn,
+                                pow_three_btn, cubedrt_btn, yroot_btn, 
+                                two_to_x_btn, log_y_btn, e_to_x_btn]
         
         count = 0
+        
         for row in range(0, 7):
             for col in range(0, 5):
-                grid.addWidget(first_page[row + col + count], row, col)
-            count += 4
+                if col == 0 and row == 0:
+                    grid.addWidget(next_page_btn, row, col)
+                elif col == 0 and row != 0:
+                    grid.addWidget(self.alternating_btns[row - 1], row, col)
+                else:
+                    grid.addWidget(main_grid[row + (col - 1) + count], row, col)
+            count += 3
         
         return grid
 
@@ -166,7 +182,8 @@ class ScientificMode:
         
         return add_btn, sub_btn, mult_btn, div_btn, equal_btn, e_btn, pi_btn
 
-    def _insertion_btns_init(self) -> tuple:
+    def _insertion_btns_init(self) -> tuple[QPushButton, QPushButton,
+                                            QPushButton, QPushButton]:
         
         # Insertions
         pos_neg_btn = self._connect_functions("\u00B1", lambda: 
@@ -180,7 +197,7 @@ class ScientificMode:
         
         return pos_neg_btn, lb_btn, rb_btn, dot_btn
 
-    def _float_btns_init(self) -> tuple:
+    def _float_btns_init(self) -> QPushButton:
         
         it_x = "\U0001D465"
         
@@ -191,7 +208,9 @@ class ScientificMode:
         return fraction_btn
 
     # Advanced operations
-    def _adv_btns_init(self) -> tuple:
+    def _adv_btns_init(self) -> tuple[QPushButton, QPushButton, QPushButton,
+                                      QPushButton, QPushButton, QPushButton,
+                                      QPushButton]:
         
         
         it_x = "\U0001D465"
@@ -221,7 +240,11 @@ class ScientificMode:
                log_btn, nat_log_btn, log_y_btn
     
     # Powers and Roots
-    def _pow_root_btns_init(self) -> tuple:
+    def _pow_root_btns_init(self) -> tuple[QPushButton, QPushButton,
+                                           QPushButton, QPushButton,
+                                           QPushButton, QPushButton,
+                                           QPushButton, QPushButton,
+                                           QPushButton]:
         
         it_x = "\U0001D465"
         it_y = "\U0001D466"
@@ -263,7 +286,8 @@ class ScientificMode:
                pow_three_btn, pow_y_btn, sqrt_btn, cubedrt_btn,\
                yroot_btn
                
-    def _additional_btns_init(self) -> tuple:
+    def _additional_btns_init(self) -> tuple[QPushButton, QPushButton, 
+                                             QPushButton]:
         
         next_page = "\u21AA"
         
@@ -351,7 +375,8 @@ class ScientificMode:
         
         return num_btn
     
-    def _connect_functions(self, label: str, func) -> QPushButton:
+    def _connect_functions(self, label: str, 
+                           func: Callable[[], None]) -> QPushButton:
         """Handles button to function connection
 
         Args:
@@ -370,5 +395,19 @@ class ScientificMode:
     
     def _show_next_page(self) -> None:
         
-        print("")
+        btns = self.alternating_btns
+        
+        if self.curr_page == 0:
+            offset = 5
+            self.curr_page = 1
+        else:
+            offset = -1
+            self.curr_page = 0
+        
+        for row in range(1, 7):
+            self.grid.addWidget(btns[(row + offset)], row, 0)
+        
+        
+            
+        
     
