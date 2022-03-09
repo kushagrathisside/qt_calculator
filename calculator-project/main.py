@@ -26,17 +26,17 @@ class MainWindow(QWidget):
         super().__init__()
         
         # Calculator Modes
-        m_standard = StandardMode()
-        m_scientific = ScientificMode()
+        self.m_standard = StandardMode()
+        self.m_scientific = ScientificMode()
         
         # Public Variables
-        self.curr_mode = "Scientific"
+        self.curr_mode = "Standard"
         
         # Startup Mode
         if self.curr_mode == "Standard":
-            m_standard.set_window(self)
+            self.m_standard.set_window(self)
         elif self.curr_mode == "Scientific":
-            m_scientific.set_window(self)
+            self.m_scientific.set_window(self)
         
 
 # Run Application

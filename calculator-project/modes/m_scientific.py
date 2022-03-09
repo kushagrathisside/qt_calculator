@@ -1,9 +1,10 @@
 from collections.abc import Callable
 
 
+from PyQt6 import sip
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon, QFont
-from PyQt6.QtWidgets import (QLabel, QGridLayout, QMenuBar,
+from PyQt6.QtGui import QAction, QIcon, QFont
+from PyQt6.QtWidgets import (QLabel, QLayout, QGridLayout, QMenuBar,
                              QPushButton, QVBoxLayout, QWidget)
 
 
@@ -25,15 +26,16 @@ class ScientificMode:
         Args:
             window (QWidget): Window
         """
+        self.window = window
         
-        window.setWindowIcon(QIcon("/icons/calculator.png"))
-        window.setWindowTitle("Калькулятор Morrison")
-        window.setFixedSize(410, 480)
+        self.window.setWindowIcon(QIcon("/icons/calculator.png"))
+        self.window.setWindowTitle("Калькулятор")
+        self.window.setFixedSize(410, 480)
         
-        layout = self._get_layout()
-        window.setLayout(layout)
+        self.layout = self._get_layout()
+        self.window.setLayout(self.layout)
         
-        window.curr_mode = "Scientific"
+        self.window.curr_mode = "Scientific"
         
     def _get_layout(self) -> QVBoxLayout:
         """Calculator's Window Layout
@@ -42,7 +44,7 @@ class ScientificMode:
             QVBoxLayout: Vertical Layout
         """
         
-        vbox = QVBoxLayout()
+        vbox = QVBoxLayout(self.window)
         
         self.log_line = QLabel(self.btn_actions.log)
         self.log_line.setFixedSize(380, 22)
@@ -68,6 +70,7 @@ class ScientificMode:
         
         return vbox
     
+    # Menu Bar Methods
     def _menu_bar(self) -> QMenuBar:
         """Creates menu bar
 
@@ -75,15 +78,36 @@ class ScientificMode:
             QMenuBar: Menu Bar
         """
         
-        menu_bar = QMenuBar()
+        menu_bar = QMenuBar(self.window)
         menu_bar.setBaseSize(self.output_line.width(), 15)
         
-        modes_menu = menu_bar.addMenu("&Modes")
-        modes_menu.addAction("Standard")
-        modes_menu.addAction("Scientific")
+        self.standard = QAction("Standard", self.window)
+        self.standard.triggered.connect(self._mode_change)
                 
+        menu_bar.addAction(self.standard)
+        
         return menu_bar
     
+    def _mode_change(self) -> None:
+                
+        layout = self.window.layout()
+        self.delete_widgets(self.layout)
+        del layout
+        self.window.m_standard.set_window(self.window)
+    
+    def delete_widgets(self, layout: QLayout) -> None:
+        
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()
+                else:
+                    self.delete_widgets(item.layout())
+            sip.delete(layout)
+    
+    # Grid Methods
     def _grid_layout(self) -> QGridLayout:
         """Buttons Grid Layout
 
@@ -91,7 +115,7 @@ class ScientificMode:
             QGridLayout: Grid Layout
         """
         
-        grid = QGridLayout()
+        grid = QGridLayout(self.window)
         
         #Number Buttons
         one_btn = self._numbers_btns_init(1)
