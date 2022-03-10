@@ -92,7 +92,7 @@ class ScientificMode:
                 
         layout = self.window.layout()
         self._reset_calculator()
-        self.delete_widgets(self.layout)
+        self._delete_widgets(self.layout)
         del layout
         self.window.m_standard.set_window(self.window)
     
@@ -108,7 +108,7 @@ class ScientificMode:
         self.output_line.setText(self.btn_actions.text)
         self.log_line.setText(self.btn_actions.log)
     
-    def delete_widgets(self, layout: QLayout) -> None:
+    def _delete_widgets(self, layout: QLayout) -> None:
         
         if layout is not None:
             while layout.count():
@@ -117,7 +117,7 @@ class ScientificMode:
                 if widget is not None:
                     widget.deleteLater()
                 else:
-                    self.delete_widgets(item.layout())
+                    self._delete_widgets(item.layout())
             sip.delete(layout)
     
     # Grid Methods
@@ -153,43 +153,35 @@ class ScientificMode:
         fraction_btn = self._float_btns_init()
         
         # Advanced Operations Buttons
-        factorial_btn, mod_btn, exp_btn, abs_btn,\
-            log_btn, nat_log_btn, log_y_btn = self._adv_btns_init()
+        factorial_btn, mod_btn, exp_btn, abs_btn = self._adv_btns_init()
                
         # Power and Root Buttons
-        two_to_x_btn, ten_to_x_btn, e_to_x_btn, pow_two_btn,\
-            pow_three_btn, pow_y_btn, sqrt_btn, cubedrt_btn,\
-                yroot_btn = self._pow_root_btns_init()
+        alt_btn_one, alt_btn_two, alt_btn_three,\
+            alt_btn_four, alt_btn_five, alt_btn_six = self._alt_btns_init()
         
         # Additional Buttons
         next_page_btn, clear_btn, \
             erase_btn = self._additional_btns_init()
         
+        # Alternating Buttons
+        self.alt_btn_one, self.alt_btn_two, self.alt_btn_three, self.alt_btn_four,\
+            self.alt_btn_five, self.alt_btn_six = self._alt_btns_init()
+        
         #Adding Buttons to a Grid
-        main_grid = [pi_btn, e_btn, clear_btn, erase_btn,
-                     fraction_btn, abs_btn, exp_btn, mod_btn,
-                     lb_btn, rb_btn, factorial_btn, div_btn,
-                     one_btn, two_btn, three_btn, mult_btn,
-                     four_btn, five_btn, six_btn, sub_btn,
-                     seven_btn, eight_btn, nine_btn, add_btn,
-                     pos_neg_btn, zero_btn, dot_btn, equal_btn]
-        
-        self.alternating_btns = [pow_two_btn, sqrt_btn, pow_y_btn,
-                                ten_to_x_btn, log_btn, nat_log_btn,
-                                pow_three_btn, cubedrt_btn, yroot_btn, 
-                                two_to_x_btn, log_y_btn, e_to_x_btn]
-        
+        main_grid = [next_page_btn, pi_btn, e_btn, clear_btn, erase_btn,
+                     self.alt_btn_one, fraction_btn, abs_btn, exp_btn, mod_btn,
+                     self.alt_btn_two, lb_btn, rb_btn, factorial_btn, div_btn,
+                     self.alt_btn_three, one_btn, two_btn, three_btn, mult_btn,
+                     self.alt_btn_four, four_btn, five_btn, six_btn, sub_btn,
+                     self.alt_btn_five, seven_btn, eight_btn, nine_btn, add_btn,
+                     self.alt_btn_six, pos_neg_btn, zero_btn, dot_btn, equal_btn]
+
         count = 0
         
         for row in range(0, 7):
             for col in range(0, 5):
-                if col == 0 and row == 0:
-                    grid.addWidget(next_page_btn, row, col)
-                elif col == 0 and row != 0:
-                    grid.addWidget(self.alternating_btns[row - 1], row, col)
-                else:
-                    grid.addWidget(main_grid[row + (col - 1) + count], row, col)
-            count += 3
+                grid.addWidget(main_grid[row + col + count], row, col)
+            count += 4
         
         return grid
 
@@ -251,7 +243,6 @@ class ScientificMode:
         
         
         it_x = "\U0001D465"
-        sub_y = "\u1D67"
         
         factorial_btn = self._connect_functions("\U0001D48F!", lambda:
             self.btn_actions.factorial(self.output_line, self.log_line))
@@ -264,24 +255,11 @@ class ScientificMode:
         abs_btn = self._connect_functions(f"|{it_x}|", lambda:
             self.btn_actions.absolute(self.output_line, self.log_line))
         
-        #Logarithms
-        log_btn = self._connect_functions("log", lambda:
-            self.btn_actions.logarithm(self.output_line, self.log_line))
-        
-        nat_log_btn = self._connect_functions("ln", lambda:
-            self.btn_actions.nat_log(self.output_line, self.log_line))
-        
-        log_y_btn = self._op_btns_init(f"log{sub_y}{it_x}")
-        
-        return factorial_btn, mod_btn, exp_btn, abs_btn,\
-               log_btn, nat_log_btn, log_y_btn
+        return factorial_btn, mod_btn, exp_btn, abs_btn
     
     # Powers and Roots
-    def _pow_root_btns_init(self) -> tuple[QPushButton, QPushButton,
-                                           QPushButton, QPushButton,
-                                           QPushButton, QPushButton,
-                                           QPushButton, QPushButton,
-                                           QPushButton]:
+    def _alt_btns_init(self) -> tuple[QPushButton, QPushButton, QPushButton,
+                                      QPushButton, QPushButton, QPushButton]:
         
         it_x = "\U0001D465"
         it_y = "\U0001D466"
@@ -294,34 +272,30 @@ class ScientificMode:
         sq_root = "\u221A"
         cube_root = "\u221B"
         
-        two_to_x_btn = self._connect_functions(f"2{ss_x}", lambda:
-            self.btn_actions.two_to_x(self.output_line, self.log_line))
+        self.alt_ops = [f"{it_x}{ss_two}", f"{sq_root}{it_x}", f"{it_x}{ss_y}",
+                      f"10{ss_x}", "log", "ln", f"{it_x}{ss_three}", 
+                      f"{cube_root}{it_x}", f"{it_y}{sq_root}{it_x}",
+                      f"2{ss_x}", f"log{it_y}{it_x}", f"e{ss_x}"]
         
-        ten_to_x_btn = self._connect_functions(f"10{ss_x}", lambda:
-            self.btn_actions.ten_to_x(self.output_line, self.log_line))
+        alt_btn_one = self._alt_btns_connect(self.alt_ops[0])
+        alt_btn_two = self._alt_btns_connect(self.alt_ops[1])
+        alt_btn_three = self._alt_btns_connect(self.alt_ops[2])
+        alt_btn_four = self._alt_btns_connect(self.alt_ops[3])
+        alt_btn_five = self._alt_btns_connect(self.alt_ops[4])
+        alt_btn_six = self._alt_btns_connect(self.alt_ops[5])
         
-        e_to_x_btn = self._connect_functions(f"e{ss_x}", lambda:
-            self.btn_actions.e_to_x(self.output_line, self.log_line))
+        return alt_btn_one, alt_btn_two, alt_btn_three,\
+               alt_btn_four, alt_btn_five, alt_btn_six
+    
+    def _alt_btns_connect(self, operation) -> QPushButton:
         
-        pow_two_btn = self._connect_functions(f"{it_x}{ss_two}", lambda: 
-            self.btn_actions.pow_of_two(self.output_line, self.log_line))
+        alt_btn = QPushButton(operation)
+        alt_btn.setMinimumSize(75, 50)
+        alt_btn.clicked.connect(lambda:
+            self.btn_actions.alt_ops_handler(alt_btn.text(), self.output_line, 
+                                             self.log_line))
         
-        pow_three_btn = self._connect_functions(f"{it_x}{ss_three}", lambda:
-            self.btn_actions.pow_of_three(self.output_line, self.log_line))
-        
-        pow_y_btn = self._op_btns_init(f"{it_x}{ss_y}")
-        
-        sqrt_btn = self._connect_functions(f"{sq_root}{it_x}", lambda: 
-            self.btn_actions.square_root(self.output_line, self.log_line))   
-        
-        cubedrt_btn = self._connect_functions(f"{cube_root}{it_x}", lambda:
-            self.btn_actions.cubed_root(self.output_line, self.log_line))
-        
-        yroot_btn = self._op_btns_init(f"{it_y}{sq_root}{it_x}")
-        
-        return two_to_x_btn, ten_to_x_btn, e_to_x_btn, pow_two_btn,\
-               pow_three_btn, pow_y_btn, sqrt_btn, cubedrt_btn,\
-               yroot_btn
+        return alt_btn
     
     # Functional Buttons Initializer          
     def _additional_btns_init(self) -> tuple[QPushButton, QPushButton, 
@@ -436,20 +410,20 @@ class ScientificMode:
     # Next Page Method
     def _show_next_page(self) -> None:
         
-        btns = self.alternating_btns
+        alt_ops = self.alt_ops
         
         if self.curr_page == 0:
-            next_widget = 5
-            offset = -1
+            offset = 6
             self.curr_page = 1
         else:
-            next_widget = -1
-            offset = 5
+            offset = 0
             self.curr_page = 0
         
-        for row in range(1, 7):
-            self.grid.removeWidget(btns[row + offset])
-            self.grid.addWidget(btns[(row + next_widget)], row, 0)
+        alt_btns = [self.alt_btn_one, self.alt_btn_two, self.alt_btn_three,
+                    self.alt_btn_four, self.alt_btn_five, self.alt_btn_six]
+        
+        for i in range(0, 6):
+            alt_btns[i].setText(alt_ops[i + offset])
         
         
             

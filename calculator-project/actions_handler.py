@@ -1,7 +1,7 @@
 import math
 
 
-from PyQt6.QtWidgets import QLabel
+from PyQt6.QtWidgets import QLabel, QPushButton
 
 
 class ActionsHandler:
@@ -35,7 +35,7 @@ class ActionsHandler:
         
         op_flags = ["=", "1/x", "%", "pow", "root",
                     "fac", "2x", "10x", "ex", "log", 
-                    "three"]
+                    "three", "pi", "e"]
         
         if len(self.text) <= 12:
             if self._prev_operation in op_flags or self._clear_log:
@@ -412,7 +412,52 @@ class ActionsHandler:
             out_line.setText(self.text)
             log_line.setText(self.log)
     
+    # Scientific Mode Methods
     # Power of Two
+    def alt_ops_handler(self, btn_text: str,
+                        out_line: QLabel, log_line: QLabel) -> None:
+        
+        it_x = "\U0001D465"
+        it_y = "\U0001D466"
+        
+        ss_x = "\u02E3"
+        ss_y = "\u02B8"
+        ss_two = "\u00B2"
+        ss_three = "\u00B3"
+        
+        sq_root = "\u221A"
+        cube_root = "\u221B"
+        
+        alt_ops = [f"{it_x}{ss_two}", f"{sq_root}{it_x}", f"{it_x}{ss_y}",
+                   f"10{ss_x}", "log", "ln", f"{it_x}{ss_three}", 
+                   f"{cube_root}{it_x}", f"{it_y}{sq_root}{it_x}",
+                   f"2{ss_x}", f"log{it_y}{it_x}", f"e{ss_x}"]
+        
+        if btn_text == alt_ops[0]:
+            self.pow_of_two(out_line, log_line)
+        if btn_text == alt_ops[1]:
+            self.square_root(out_line, log_line)
+        if btn_text == alt_ops[2]:
+            self._operations_handler("ypow", out_line, log_line)
+        if btn_text == alt_ops[3]:
+            self.ten_to_x(out_line, log_line)
+        if btn_text == alt_ops[4]:
+            self.logarithm(out_line, log_line)
+        if btn_text == alt_ops[5]:
+            self.nat_log(out_line, log_line)
+        if btn_text == alt_ops[6]:
+            self.pow_of_three(out_line, log_line)
+        if btn_text == alt_ops[7]:
+            self.cubed_root(out_line, log_line)
+        if btn_text == alt_ops[8]:
+            self._operations_handler("yroot", out_line, log_line)
+        if btn_text == alt_ops[9]:
+            self.two_to_x(out_line, log_line)
+        if btn_text == alt_ops[10]:
+            self._operations_handler("ylog", out_line, log_line)
+        if btn_text == alt_ops[11]:
+            self.e_to_x(out_line, log_line)
+    
     def pow_of_two(self, out_line: QLabel, log_line: QLabel) -> None:
         """Handles output of number to the power of two
 
@@ -458,7 +503,6 @@ class ActionsHandler:
             out_line.setText(self.text)
             log_line.setText(self.log)
     
-    # Scientific Mode Methods
     # Bracket Insertion    
     def insert_bracket(self, bracket: str, log_line: QLabel) -> None:
         """Inserts brackets into the log line
@@ -739,17 +783,18 @@ class ActionsHandler:
         
         op_flags = ["=", "1/x", "%", "pow", "root",
                     "fac", "2x", "10x", "exp", "log", 
-                    "three"]
+                    "three", "pi", "e", "num"]
         
         pi = round(math.pi, 5)
         
-        if self._prev_operation in op_flags or self._clear_log:
+        if self._prev_operation in op_flags or self._clear_log\
+            or str(pi) in self.log:
             self.text = str(pi)
             self.log = str(pi)
             
             self._is_float = True
             self._clear_log = False
-            self._prev_operation = ""        
+                    
         else:
             self.text = str(pi)
             self.log += str(pi)
@@ -764,23 +809,23 @@ class ActionsHandler:
         
         op_flags = ["=", "1/x", "%", "pow", "root",
                     "fac", "2x", "10x", "exp", "log", 
-                    "three"]
+                    "three", "pi", "e", "num"]
         
         e = round(math.e, 5)
         
-        if self._prev_operation in op_flags or self._clear_log:
+        if self._prev_operation in op_flags or self._clear_log\
+            or str(math.e) in self.log:
             self.text = str(e)
             self.log = str(e)
             
             self._is_float = True
-            self._clear_log = False
-            self._prev_operation = ""        
+            self._clear_log = False            
         else:
             self.text = str(e)
             self.log += str(e)
             
             self._is_float = True
-            
+        
         out_line.setText(self.text)
         log_line.setText(self.log)
     
