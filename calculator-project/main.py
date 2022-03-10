@@ -9,8 +9,8 @@ from PyQt6.QtWidgets import (QApplication, QWidget)
 
 
 # Local Modules
-from modes.m_standard import StandardMode
-from modes.m_scientific import ScientificMode
+from modes import StandardMode
+from modes import ScientificMode
 
 class MainWindow(QWidget):
     """Calculator's Main Window
