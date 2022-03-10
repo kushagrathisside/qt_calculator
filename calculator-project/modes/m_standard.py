@@ -1,13 +1,32 @@
-from PyQt6 import sip
+"""Calculator Standard mode module.
+
+Returns:
+    StandardMode (class): Standard calculator mode class
+"""
+
+
+from collections.abc import Callable
+
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QIcon, QFont
-from PyQt6.QtWidgets import (QLabel, QLayout, QGridLayout, QMenuBar,
+from PyQt6.QtWidgets import (QLabel, QGridLayout, QMenuBar,
                              QPushButton, QVBoxLayout, QWidget)
 
 
 from actions_handler import ActionsHandler
 
 class StandardMode:
+    """Calculator Standard mode class
+    
+    Attributes:
+        btn_actions: ActionsHandler class instance
+        window (QWidget): App's main window
+        layout (QVBoxLayout): Scientific mode window layout
+        grid (QGridLayout): Buttons grid layout
+        log_line (QLabel): Log QLabel
+        output_line (QLabel): Output QLabel
+    """
     
     def __init__(self) -> None:
         """Class Initialization
@@ -33,10 +52,10 @@ class StandardMode:
         self.window.curr_mode = "Standard"
         
     def _get_layout(self) -> QVBoxLayout:
-        """Calculator's Window Layout
+        """Standard mode window layout
 
         Returns:
-            QVBoxLayout: Vertical Layout
+            vbox (QVBoxLayout): Vertical Box Layout
         """
         
         vbox = QVBoxLayout(self.window)
@@ -66,10 +85,10 @@ class StandardMode:
         return vbox
     
     def _menu_bar(self) -> QMenuBar:
-        """Creates menu bar
+        """Create menu bar
 
         Returns:
-            QMenuBar: Menu Bar
+            menu_bar (QMenuBar): Menu Bar
         """
         
         menu_bar = QMenuBar(self.window)
@@ -83,36 +102,14 @@ class StandardMode:
         return menu_bar
     
     def _switch_to_sci(self) -> None:
+        """Handle switching from standard to scientific mode
+        """
         
         layout = self.window.layout()
-        self._reset_calculator()
-        self.delete_widgets(self.layout)
+        self.btn_actions.reset_calculator(self.output_line, self.log_line)
+        self.btn_actions.delete_widgets(self.layout)
         del layout
         self.window.m_scientific.set_window(self.window)
-        
-    def _reset_calculator(self) -> None:
-        
-        self.btn_actions._prev_operation = ""
-        self.btn_actions._is_float = False
-        self.btn_actions._clear_log = False
-        self.btn_actions._first_value = 0
-        self.btn_actions.log = ""
-        self.btn_actions.text = ""
-        
-        self.output_line.setText(self.btn_actions.text)
-        self.log_line.setText(self.btn_actions.log)
-    
-    def delete_widgets(self, layout: QLayout) -> None:
-        
-        if layout is not None:
-            while layout.count():
-                item = layout.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
-                else:
-                    self.delete_widgets(item.layout())
-            sip.delete(layout)
     
     # Grid Methods
     def _grid_layout(self) -> QGridLayout:
@@ -158,11 +155,11 @@ class StandardMode:
         return grid
 
     #Buttons Initializers
-    def _sign_btns_init(self) -> QPushButton:
-        """Creating buttons for signs
+    def _sign_btns_init(self) -> tuple:
+        """Create all buttons except numbers.
 
         Returns:
-            QPushButton: Buttons
+            tuple[QPushButton]: Buttons
         """
         
         italic_x = "\N{MATHEMATICAL ITALIC SMALL X}"
@@ -209,7 +206,7 @@ class StandardMode:
                 erase_btn, fraction_btn, pow_two_btn, sqrt_btn
 
     def _op_btns_init(self, operation: str) -> QPushButton:
-        """Handles operation buttons
+        """Connect arithmetic operations to their respective methods.
 
         Args:
             operation (str): Operation sign
@@ -238,12 +235,12 @@ class StandardMode:
         
         return op_btn
     
-    def _func_btns_init(self, label: str, func) -> QPushButton:
-        """Handles initialization of additional buttons
+    def _func_btns_init(self, label: str, func: Callable[[], None]) -> QPushButton:
+        """Connect functional buttons to the specified method.
 
         Args:
             label (str): Button Label
-            func ([type]): Button Function
+            func (Callable): Button Function
 
         Returns:
             QPushButton: Button
@@ -257,7 +254,7 @@ class StandardMode:
     
     #Number Buttons Initializer
     def _numbers_btns_init(self, number: int) -> QPushButton:
-        """Handles number buttons creation
+        """Create and connect numbers to the numbers handler method.
 
         Args:
             number (int): Number from 0 to 9
