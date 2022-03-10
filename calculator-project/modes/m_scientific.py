@@ -82,18 +82,31 @@ class ScientificMode:
         menu_bar.setBaseSize(self.output_line.width(), 15)
         
         self.standard = QAction("Standard", self.window)
-        self.standard.triggered.connect(self._mode_change)
+        self.standard.triggered.connect(self._switch_to_std)
                 
         menu_bar.addAction(self.standard)
         
         return menu_bar
     
-    def _mode_change(self) -> None:
+    def _switch_to_std(self) -> None:
                 
         layout = self.window.layout()
+        self._reset_calculator()
         self.delete_widgets(self.layout)
         del layout
         self.window.m_standard.set_window(self.window)
+    
+    def _reset_calculator(self) -> None:
+        
+        self.btn_actions._prev_operation = ""
+        self.btn_actions._is_float = False
+        self.btn_actions._clear_log = False
+        self.btn_actions._first_value = 0
+        self.btn_actions.log = ""
+        self.btn_actions.text = ""
+        
+        self.output_line.setText(self.btn_actions.text)
+        self.log_line.setText(self.btn_actions.log)
     
     def delete_widgets(self, layout: QLayout) -> None:
         
@@ -309,7 +322,8 @@ class ScientificMode:
         return two_to_x_btn, ten_to_x_btn, e_to_x_btn, pow_two_btn,\
                pow_three_btn, pow_y_btn, sqrt_btn, cubedrt_btn,\
                yroot_btn
-               
+    
+    # Functional Buttons Initializer          
     def _additional_btns_init(self) -> tuple[QPushButton, QPushButton, 
                                              QPushButton]:
         
@@ -327,6 +341,7 @@ class ScientificMode:
         
         return next_page_btn, clear_btn, erase_btn
 
+    # Operation Buttons Initializer
     def _op_btns_init(self, operation: str) -> QPushButton:
         """Handles operation buttons
 
@@ -399,6 +414,7 @@ class ScientificMode:
         
         return num_btn
     
+    # Buttons' Methods Connector
     def _connect_functions(self, label: str, 
                            func: Callable[[], None]) -> QPushButton:
         """Handles button to function connection
@@ -417,19 +433,23 @@ class ScientificMode:
         
         return func_btn
     
+    # Next Page Method
     def _show_next_page(self) -> None:
         
         btns = self.alternating_btns
         
         if self.curr_page == 0:
-            offset = 5
+            next_widget = 5
+            offset = -1
             self.curr_page = 1
         else:
-            offset = -1
+            next_widget = -1
+            offset = 5
             self.curr_page = 0
         
         for row in range(1, 7):
-            self.grid.addWidget(btns[(row + offset)], row, 0)
+            self.grid.removeWidget(btns[row + offset])
+            self.grid.addWidget(btns[(row + next_widget)], row, 0)
         
         
             

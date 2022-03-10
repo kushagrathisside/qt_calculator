@@ -76,18 +76,31 @@ class StandardMode:
         menu_bar.setBaseSize(self.output_line.width(), 15)
         
         scientific = QAction("Scientific", self.window)
-        scientific.triggered.connect(self._mode_change)
+        scientific.triggered.connect(self._switch_to_sci)
         
         menu_bar.addAction(scientific)
                 
         return menu_bar
     
-    def _mode_change(self) -> None:
+    def _switch_to_sci(self) -> None:
         
         layout = self.window.layout()
+        self._reset_calculator()
         self.delete_widgets(self.layout)
         del layout
         self.window.m_scientific.set_window(self.window)
+        
+    def _reset_calculator(self) -> None:
+        
+        self.btn_actions._prev_operation = ""
+        self.btn_actions._is_float = False
+        self.btn_actions._clear_log = False
+        self.btn_actions._first_value = 0
+        self.btn_actions.log = ""
+        self.btn_actions.text = ""
+        
+        self.output_line.setText(self.btn_actions.text)
+        self.log_line.setText(self.btn_actions.log)
     
     def delete_widgets(self, layout: QLayout) -> None:
         
