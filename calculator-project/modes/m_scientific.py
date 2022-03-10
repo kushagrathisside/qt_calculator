@@ -1,16 +1,33 @@
+"""Calculator Scientific Mode module
+
+Returns:
+    ScientificMode (class): Scientific calculator mode class
+"""
+
+
 from collections.abc import Callable
 
 
-from PyQt6 import sip
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QIcon, QFont
-from PyQt6.QtWidgets import (QLabel, QLayout, QGridLayout, QMenuBar,
+from PyQt6.QtWidgets import (QLabel, QGridLayout, QMenuBar,
                              QPushButton, QVBoxLayout, QWidget)
 
 
 from actions_handler import ActionsHandler
 
 class ScientificMode:
+    """Calculator Scientific mode class
+    
+    Attributes:
+        btn_actions (ActionsHandler): Instance of ActionsHandler class
+        curr_page (int): Current operations page
+        window (QWidget): App's main window
+        layout (QVBoxLayout): Scientific mode window layout
+        grid (QGridLayout): Buttons grid layout
+        log_line (QLabel): Log QLabel
+        output_line (QLabel): Output QLabel
+    """
     
     def __init__(self) -> None:
         """Class Initialization
@@ -24,8 +41,9 @@ class ScientificMode:
         """Set up the window
 
         Args:
-            window (QWidget): Window
+            window (QWidget): App window
         """
+        
         self.window = window
         
         self.window.setWindowIcon(QIcon("/icons/calculator.png"))
@@ -38,10 +56,10 @@ class ScientificMode:
         self.window.curr_mode = "Scientific"
         
     def _get_layout(self) -> QVBoxLayout:
-        """Calculator's Window Layout
+        """Scientific mode window layout
 
         Returns:
-            QVBoxLayout: Vertical Layout
+            vbox (QVBoxLayout): Vertical Box Layout
         """
         
         vbox = QVBoxLayout(self.window)
@@ -70,12 +88,11 @@ class ScientificMode:
         
         return vbox
     
-    # Menu Bar Methods
     def _menu_bar(self) -> QMenuBar:
-        """Creates menu bar
+        """Create menu bar
 
         Returns:
-            QMenuBar: Menu Bar
+            menu_bar (QMenuBar): Menu Bar
         """
         
         menu_bar = QMenuBar(self.window)
@@ -88,44 +105,22 @@ class ScientificMode:
         
         return menu_bar
     
+    # Scientific-to-Standard switch handling methods
     def _switch_to_std(self) -> None:
-                
+        """Handle switching from scientific to standard mode
+        """
+            
         layout = self.window.layout()
-        self._reset_calculator()
-        self._delete_widgets(self.layout)
+        self.btn_actions.reset_calculator(self.output_line, self.log_line)
+        self.btn_actions.delete_widgets(self.layout)
         del layout
         self.window.m_standard.set_window(self.window)
     
-    def _reset_calculator(self) -> None:
-        
-        self.btn_actions._prev_operation = ""
-        self.btn_actions._is_float = False
-        self.btn_actions._clear_log = False
-        self.btn_actions._first_value = 0
-        self.btn_actions.log = ""
-        self.btn_actions.text = ""
-        
-        self.output_line.setText(self.btn_actions.text)
-        self.log_line.setText(self.btn_actions.log)
-    
-    def _delete_widgets(self, layout: QLayout) -> None:
-        
-        if layout is not None:
-            while layout.count():
-                item = layout.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
-                else:
-                    self._delete_widgets(item.layout())
-            sip.delete(layout)
-    
-    # Grid Methods
     def _grid_layout(self) -> QGridLayout:
         """Buttons Grid Layout
 
         Returns:
-            QGridLayout: Grid Layout
+            grid (QGridLayout): Grid Layout
         """
         
         grid = QGridLayout(self.window)
@@ -154,10 +149,6 @@ class ScientificMode:
         
         # Advanced Operations Buttons
         factorial_btn, mod_btn, exp_btn, abs_btn = self._adv_btns_init()
-               
-        # Power and Root Buttons
-        alt_btn_one, alt_btn_two, alt_btn_three,\
-            alt_btn_four, alt_btn_five, alt_btn_six = self._alt_btns_init()
         
         # Additional Buttons
         next_page_btn, clear_btn, \
@@ -187,10 +178,10 @@ class ScientificMode:
 
     #Buttons Initializers
     def _arithmetic_btns_init(self) -> tuple:
-        """Creating buttons for signs
+        """Create basic arithmetic operations buttons.
 
         Returns:
-            QPushButton: Buttons
+            tuple: Buttons
         """
 
         pi = "\u03C0"
@@ -213,6 +204,14 @@ class ScientificMode:
 
     def _insertion_btns_init(self) -> tuple[QPushButton, QPushButton,
                                             QPushButton, QPushButton]:
+        """Create buttons for insertion symbols.
+        
+        Examples:
+            ., -, (, ): Insertion symbols
+
+        Returns:
+            tuple[QPushButton, QPushButton, QPushButton, QPushButton]: Buttons
+        """
         
         # Insertions
         pos_neg_btn = self._connect_functions("\u00B1", lambda: 
@@ -227,6 +226,11 @@ class ScientificMode:
         return pos_neg_btn, lb_btn, rb_btn, dot_btn
 
     def _float_btns_init(self) -> QPushButton:
+        """Create number fractioning button
+
+        Returns:
+            fraction_btn (QPushButton): Button
+        """
         
         it_x = "\U0001D465"
         
@@ -238,9 +242,15 @@ class ScientificMode:
 
     # Advanced operations
     def _adv_btns_init(self) -> tuple[QPushButton, QPushButton, QPushButton,
-                                      QPushButton, QPushButton, QPushButton,
                                       QPushButton]:
-        
+        """Create advanced arithmetic operations buttons
+
+        Examples:
+            Factorial, modulo, exponent, absolute value
+
+        Returns:
+            tuple[QPushButton, QPushButton, QPushButton, QPushButton]: Buttons
+        """
         
         it_x = "\U0001D465"
         
@@ -260,6 +270,11 @@ class ScientificMode:
     # Powers and Roots
     def _alt_btns_init(self) -> tuple[QPushButton, QPushButton, QPushButton,
                                       QPushButton, QPushButton, QPushButton]:
+        """Create buttons with alternating labels
+
+        Returns:
+            tuple[QPushButton, QPushButton, QPushButton, QPushButton, QPushButton, QPushButton]: Buttons
+        """
         
         it_x = "\U0001D465"
         it_y = "\U0001D466"
@@ -287,7 +302,15 @@ class ScientificMode:
         return alt_btn_one, alt_btn_two, alt_btn_three,\
                alt_btn_four, alt_btn_five, alt_btn_six
     
-    def _alt_btns_connect(self, operation) -> QPushButton:
+    def _alt_btns_connect(self, operation: str) -> QPushButton:
+        """Connect buttons with alternating labels to a handler
+
+        Args:
+            operation (str): Button label
+
+        Returns:
+            alt_btn (QPushButton): Button
+        """
         
         alt_btn = QPushButton(operation)
         alt_btn.setMinimumSize(75, 50)
@@ -300,12 +323,17 @@ class ScientificMode:
     # Functional Buttons Initializer          
     def _additional_btns_init(self) -> tuple[QPushButton, QPushButton, 
                                              QPushButton]:
+        """Create additional buttons
+
+        Returns:
+            tuple[QPushButton, QPushButton, QPushButton]: Buttons
+        """
         
         next_page = "\u21AA"
         
         # Functional buttons
         next_page_btn = self._connect_functions(f"{next_page}",
-            self._show_next_page)
+            self._change_btn_text)
         
         clear_btn = self._connect_functions("C", lambda: 
             self.btn_actions.clear_text(self.output_line, self.log_line))
@@ -317,13 +345,13 @@ class ScientificMode:
 
     # Operation Buttons Initializer
     def _op_btns_init(self, operation: str) -> QPushButton:
-        """Handles operation buttons
+        """Connect operations buttons to the respective methods
 
         Args:
             operation (str): Operation sign
 
         Returns:
-            QPushButton: Operation button
+            QPushButton: Button
         """
 
         it_x = "\U0001D465"
@@ -371,7 +399,7 @@ class ScientificMode:
     
     #Number Buttons Initializer
     def _numbers_btns_init(self, number: int) -> QPushButton:
-        """Handles number buttons creation
+        """Connect numbers to the respective methods in current btn_actions instance.
 
         Args:
             number (int): Number from 0 to 9
@@ -391,11 +419,11 @@ class ScientificMode:
     # Buttons' Methods Connector
     def _connect_functions(self, label: str, 
                            func: Callable[[], None]) -> QPushButton:
-        """Handles button to function connection
+        """Connect buttons to the specified method
 
         Args:
             label (str): Button Label
-            func ([type]): Button Function
+            func (Callable): Button Function
 
         Returns:
             QPushButton: Button
@@ -408,7 +436,9 @@ class ScientificMode:
         return func_btn
     
     # Next Page Method
-    def _show_next_page(self) -> None:
+    def _change_btn_text(self) -> None:
+        """Change button labels.
+        """
         
         alt_ops = self.alt_ops
         

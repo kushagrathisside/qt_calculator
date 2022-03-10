@@ -1,3 +1,7 @@
+"""Main module that creates an instance of the calculator.
+"""
+
+
 # Standard Modules
 import sys
 
@@ -12,11 +16,16 @@ from PyQt6.QtWidgets import (QApplication, QWidget)
 from modes.m_standard import StandardMode
 from modes.m_scientific import ScientificMode
 
+
 class MainWindow(QWidget):
     """Calculator's Main Window
 
     Args:
-        QWidget ([type]): QWidget Parent Class
+        QWidget (QWidget): QWidget Parent Class
+        
+    Attributes:
+        m_standard (StandardMode): Standard Calculator Mode
+        m_scientific (ScientificMode): Scientific Calculator Mode
     """
     
     def __init__(self) -> None:

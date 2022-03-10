@@ -1,15 +1,19 @@
+"""Handle majority of the app's functionality.
+"""
+
+
 import math
 
 
-from PyQt6.QtWidgets import QLabel, QPushButton
-
+from PyQt6 import sip
+from PyQt6.QtWidgets import QLabel, QLayout
 
 class ActionsHandler:
-    """Handles Button Actions and Mathematical Operations
+    """Handle Button Actions and Mathematical Operations
     """
     
     def __init__(self) -> None:
-        """Handles class initialization
+        """Handle class initialization
         """
         
         # Public Variables
@@ -27,7 +31,7 @@ class ActionsHandler:
     # Adding Numbers to the String
     def _add_numbers(self, number: str, out_line: QLabel, 
                      log_line: QLabel) -> None:
-        """Handles Number Buttons Actions
+        """Handle Number Buttons Actions
         
         Args:
             number (str): Number button text
@@ -62,7 +66,7 @@ class ActionsHandler:
     # Arithmetic operations    
     def _operations_handler(self, operation: str, out_line: QLabel,
                             log_line: QLabel) -> None:
-        """Handles arithmetic operations
+        """Handle arithmetic operations
 
         Args:
             operation (str): Operation button text
@@ -166,7 +170,7 @@ class ActionsHandler:
                         self._first_value = 0
 
     def _check_operations(self, operation: str, out_line: QLabel) -> None:
-        """Handles float check of first_value and performs type sensitive
+        """Handle float check of first_value and perform type sensitive
         arithmetic operations.
 
         Args:
@@ -222,11 +226,11 @@ class ActionsHandler:
                 self._first_value = int(self.text)
     
     def _check_result(self, out_line: QLabel) -> int:
-        """Handles result float check and performs type sensitivie
+        """Handle result float check and perform type sensitivie
         arithmetic operations
 
         Args:
-            out_line (QLabel): Output Line
+            out_line (QLabel): Output QLabel
 
         Returns:
             int | float: Result
@@ -292,6 +296,12 @@ class ActionsHandler:
             return res
       
     def _check_float(self, out_line: QLabel) -> None:
+        """Check output QLabel for float value
+
+        Args:
+            out_line (QLabel): Output QLabel
+        """
+        
         
         if self._is_float:
             self._first_value = float(out_line.text())
@@ -300,12 +310,13 @@ class ActionsHandler:
 
     def _op_set_values(self, operation: str, out_line: QLabel,
                        log_line: QLabel) -> None:
-        """Handles multiplication and division operations
+        """Handle log_line QLabel output of multiplication, 
+           division, and several other operations.
 
         Args:
             operation (str): Operation sign
-            out_line (QLabel): Output Line
-            log_line (QLabel): Log Line
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         self._prev_operation = operation
@@ -331,7 +342,7 @@ class ActionsHandler:
 
     # Str-to-Float Methods
     def turn_to_float(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles number to float conversion
+        """Handle number to float conversion
         """
         
         if self._prev_operation == "=":
@@ -352,7 +363,7 @@ class ActionsHandler:
 
     # To Percentage Method    
     def turn_to_percentage(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles number to percentage conversion
+        """Handle number to percentage conversion
         """
         
         if self.text:
@@ -372,11 +383,11 @@ class ActionsHandler:
     
     # Toggle number positivity
     def toggle_negativity(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles number negativity
+        """Handle number negativity
 
         Args:
-            out_line (QLabel): Output Line
-            log_line (QLabel): Log Line
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -393,11 +404,11 @@ class ActionsHandler:
     
     # Fraction
     def to_fraction(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles number to fraction conversion
+        """Handle number to fraction conversion
 
         Args:
-            out_line (QLabel): [description]
-            log_line (QLabel): [description]
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         if self.text:
             if self._is_float:
@@ -416,6 +427,14 @@ class ActionsHandler:
     # Power of Two
     def alt_ops_handler(self, btn_text: str,
                         out_line: QLabel, log_line: QLabel) -> None:
+        """Connect buttons with respective operations corresponding
+           to their text
+
+        Args:
+            btn_text (str): Button label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
+        """
         
         it_x = "\U0001D465"
         it_y = "\U0001D466"
@@ -459,11 +478,11 @@ class ActionsHandler:
             self.e_to_x(out_line, log_line)
     
     def pow_of_two(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles output of number to the power of two
+        """Handle output of a number to the power of two
 
         Args:
-            out_line (QLabel): Output Line
-            log_line (QLabel): Log Line
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -483,11 +502,11 @@ class ActionsHandler:
         
     # Square Root of a Number
     def square_root(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles output of number's square root
+        """Handle output of a number's square root
 
         Args:
-            out_line (QLabel): Output Line
-            log_line (QLabel): Log Line
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -505,11 +524,11 @@ class ActionsHandler:
     
     # Bracket Insertion    
     def insert_bracket(self, bracket: str, log_line: QLabel) -> None:
-        """Inserts brackets into the log line
+        """Insert respective bracket into the log line
 
         Args:
             bracket (str): Bracket symbol
-            log_line (QLabel): Log line
+            log_line (QLabel): Log QLabel
         """
         
         if bracket == "(":
@@ -521,11 +540,11 @@ class ActionsHandler:
 
     # Factorial Button Method
     def factorial(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles factorial button action
+        """Handle factorial button action and output of calculation
 
         Args:
-            out_line (QLabel): Outputl Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Outputl QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -546,7 +565,7 @@ class ActionsHandler:
     
     # Factorial Calculation
     def _factorial(self, number: int) -> int:
-        """Returns factorial of a number
+        """Return factorial of a number
 
         Args:
             number (int): Number
@@ -562,11 +581,11 @@ class ActionsHandler:
     
     # Absolute Button method    
     def absolute(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles absolute numbers
+        """Convert number to its absolute value
 
         Args:
-            out_line (QLabel): Output Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -582,11 +601,11 @@ class ActionsHandler:
     
     # Logarithm Button method    
     def logarithm(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Outputs a logarithm of a number with base 10
+        """Output a logarithm of a number with base 10
 
         Args:
-            out_line (QLabel): Output Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -606,11 +625,11 @@ class ActionsHandler:
     
     # Natural Logarithm Button method
     def nat_log(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Outputs a natural logarithm of a number
+        """Output a natural logarithm of a number
 
         Args:
-            out_line (QLabel): Output Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -630,11 +649,11 @@ class ActionsHandler:
     
     # Two to the Power of X Button method
     def two_to_x(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Outputs 2 to the power of a number
+        """Output 2 to the power of a number
 
         Args:
-            out_line (QLabel): Output Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -654,11 +673,11 @@ class ActionsHandler:
     
     # Ten to the Power of X Button method
     def ten_to_x(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Outputs 10 to the power of a number
+        """Output 10 to the power of a number
 
         Args:
-            out_line (QLabel): Output Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -678,11 +697,11 @@ class ActionsHandler:
     
     # e to the Power of X Button method    
     def e_to_x(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Outputs e to the power of a number
+        """Output e to the power of a number
 
         Args:
-            out_line (QLabel): Output Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -702,11 +721,11 @@ class ActionsHandler:
     
     # Power of Three Button method    
     def pow_of_three(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Outputs number to the power of three
+        """Output a number to the power of three
 
         Args:
-            out_line (QLabel): Output Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -726,7 +745,7 @@ class ActionsHandler:
     
     # Cubet root Button method    
     def cubed_root(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Outputs a cubic root of a number
+        """Output a cubic root of a number
 
         Args:
             out_line (QLabel): _description_
@@ -756,11 +775,11 @@ class ActionsHandler:
     
     # Exponent Button method         
     def exponent(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles exponent of a number
+        """Handle exponent of a number
 
         Args:
-            out_line (QLabel): Output Label
-            log_line (QLabel): Log Label
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         if self.text:
@@ -780,10 +799,16 @@ class ActionsHandler:
     
     # pi Button method        
     def print_pi(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Output the pi number
+
+        Args:
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
+        """
         
         op_flags = ["=", "1/x", "%", "pow", "root",
                     "fac", "2x", "10x", "exp", "log", 
-                    "three", "pi", "e", "num"]
+                    "three"]
         
         pi = round(math.pi, 5)
         
@@ -806,10 +831,16 @@ class ActionsHandler:
     
     # e Button method
     def print_e(self, out_line: QLabel, log_line: QLabel) -> None:
+        """Print the e constant
+
+        Args:
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
+        """
         
         op_flags = ["=", "1/x", "%", "pow", "root",
                     "fac", "2x", "10x", "exp", "log", 
-                    "three", "pi", "e", "num"]
+                    "three"]
         
         e = round(math.e, 5)
         
@@ -831,15 +862,14 @@ class ActionsHandler:
     
     # Helper Methods
     def _check_dot(self):
-        """Checks if there is dot in the Output Line
+        """Check if there is dot in the Output QLabel
         """
-        
 
         if "." in self.text:
             self._is_float = True
             
     def _sci_notation(self, res):
-        """Format's output line to scientific notation
+        """Format output line to the scientific notation
 
         Args:
             res ([type]): Number
@@ -853,11 +883,11 @@ class ActionsHandler:
             self.text = str(res)
     
     def _initial_float(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Handles Dot Button press on empty Output Line
+        """Set initial float value when Output QLabel is empty.
 
         Args:
-            out_line (QLabel): Output Line
-            log_line (QLabel): Log Line
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         self.text = "0."
@@ -870,7 +900,11 @@ class ActionsHandler:
     
     #Clearing Output QLabel and Log QLabel       
     def clear_text(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Clears calculator screen
+        """Clear both Output and Log QLabels.
+        
+        Args:
+            out_line (Qlabel): Output QLabel
+            log_line (Qlabel): Log QLabel
         """
         
         self.text = ""
@@ -882,7 +916,10 @@ class ActionsHandler:
         log_line.setText(self.log)
         
     def clear_output(self, out_line: QLabel) -> None:
-        """Clears output line
+        """Clear Output QLabel
+        
+        Args:
+            out_line (QLabel): Output QLabel
         """
         
         self.text = ""
@@ -897,11 +934,11 @@ class ActionsHandler:
         out_line.setText(self.text)
         
     def erase(self, out_line: QLabel, log_line: QLabel) -> None:
-        """Erases one digit at a time
+        """Erase one symbol at a time
 
         Args:
-            out_line (QLabel): Output Line
-            log_line (QLabel): Log Line
+            out_line (QLabel): Output QLabel
+            log_line (QLabel): Log QLabel
         """
         
         self.text = self.text[:-1]
@@ -909,3 +946,35 @@ class ActionsHandler:
         
         out_line.setText(self.text)
         log_line.setText(self.log)
+        
+    def reset_calculator(self, out_line: QLabel, 
+                         log_line: QLabel) -> None:
+        """Reset calculator public variables
+        """
+        
+        self._prev_operation = ""
+        self._is_float = False
+        self._clear_log = False
+        self._first_value = 0
+        self.log = ""
+        self.text = ""
+        
+        out_line.setText(self.text)
+        log_line.setText(self.log)
+        
+    def delete_widgets(self, layout: QLayout) -> None:
+        """Delete widgets within layout and layout itself
+
+        Args:
+            layout (QLayout): App's current layout
+        """
+        
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()
+                else:
+                    self.delete_widgets(item.layout())
+            sip.delete(layout)
