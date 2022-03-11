@@ -121,7 +121,7 @@ class StandardMode:
         
         grid = QGridLayout(self.window)
         
-        #Number Buttons
+        # Number Buttons
         one_btn = self._numbers_btns_init(1)
         two_btn = self._numbers_btns_init(2)
         three_btn = self._numbers_btns_init(3)
@@ -133,12 +133,18 @@ class StandardMode:
         nine_btn = self._numbers_btns_init(9)
         zero_btn = self._numbers_btns_init(0)
         
-        #Sign Buttons
-        add_btn, sub_btn, mult_btn, div_btn, equal_btn,\
-            pos_neg_btn, prcnt_btn, clear_btn, ce_btn,dot_btn,\
-                erase_btn, fraction_btn, pow_two_btn, sqrt_btn = self._sign_btns_init()
+        # Arithmetic operation buttons
+        add_btn, sub_btn, mult_btn,\
+            div_btn, equal_btn = self._arops_btns_init()
         
-        #Adding Buttons to a Grid
+        # Additional buttons
+        pos_neg_btn, prcnt_btn, dot_btn,\
+            fraction_btn, pow_two_btn, sqrt_btn = self._additional_btns_init()
+        
+        # Clear Buttons
+        clear_btn, ce_btn, erase_btn = self._clear_btns_init()
+        
+        # Adding Buttons to a Grid
         buttons = [prcnt_btn, ce_btn, clear_btn, erase_btn,
                    fraction_btn, pow_two_btn, sqrt_btn, add_btn,
                    one_btn, two_btn, three_btn, sub_btn,
@@ -155,26 +161,37 @@ class StandardMode:
         return grid
 
     #Buttons Initializers
-    def _sign_btns_init(self) -> tuple:
-        """Create all buttons except numbers.
+    def _arops_btns_init(self) -> tuple[QPushButton, QPushButton, QPushButton,
+                                       QPushButton, QPushButton]:
+        """Create basic arithmetic opertion buttons.
 
         Returns:
-            tuple[QPushButton]: Buttons
+            tuple: Buttons
         """
-        
-        italic_x = "\N{MATHEMATICAL ITALIC SMALL X}"
-        ss_two = "\N{SUPERSCRIPT TWO}"
-        
-        #Arithmetic operations
+
         add_btn = self._op_btns_init("+")
         sub_btn = self._op_btns_init("-")
         mult_btn = self._op_btns_init("\u00D7")
         div_btn = self._op_btns_init("\u00F7")  
         equal_btn = self._op_btns_init("=")
         
-        #Additional operations
+        return add_btn, sub_btn, mult_btn, div_btn, equal_btn
+
+    def _additional_btns_init(self) -> tuple[QPushButton, QPushButton,
+                                             QPushButton, QPushButton,
+                                             QPushButton, QPushButton]:
+        """Create additional buttons.
+
+        Returns:
+            tuple: Buttons
+        """
+        
+        italic_x = "\N{MATHEMATICAL ITALIC SMALL X}"
+        ss_two = "\N{SUPERSCRIPT TWO}"
+        
         pos_neg_btn = self._func_btns_init("\u00B1", lambda: 
-            self.btn_actions.toggle_negativity(self.output_line, self.log_line))
+            self.btn_actions.toggle_negativity(self.output_line, 
+                                               self.log_line))
         
         dot_btn = self._func_btns_init(".", lambda: 
             self.btn_actions.turn_to_float(self.output_line, self.log_line))
@@ -189,9 +206,20 @@ class StandardMode:
             self.btn_actions.square_root(self.output_line, self.log_line))   
              
         prcnt_btn = self._func_btns_init("%", lambda: 
-            self.btn_actions.turn_to_percentage(self.output_line, self.log_line))
+            self.btn_actions.turn_to_percentage(self.output_line, 
+                                                self.log_line))
+            
+        return pos_neg_btn, dot_btn, fraction_btn,\
+               pow_two_btn, sqrt_btn, prcnt_btn
+
+    def _clear_btns_init(self) -> tuple[QPushButton, QPushButton, 
+                                        QPushButton]:
+        """Create output and log QLabel clearing buttons.
+
+        Returns:
+            tuple: Buttons
+        """
         
-        #Clear buttons
         clear_btn = self._func_btns_init("C", lambda: 
             self.btn_actions.clear_text(self.output_line, self.log_line))
         
@@ -200,10 +228,27 @@ class StandardMode:
         
         erase_btn = self._func_btns_init("\u232B", lambda: 
             self.btn_actions.erase(self.output_line, self.log_line))
+            
+        return clear_btn,ce_btn,erase_btn
+
+    #Number Buttons Initializer
+    def _numbers_btns_init(self, number: int) -> QPushButton:
+        """Create and connect numbers to the numbers handler method.
+
+        Args:
+            number (int): Number from 0 to 9
+
+        Returns:
+            QPushButton: Button
+        """
         
-        return add_btn, sub_btn, mult_btn, div_btn, equal_btn,\
-            pos_neg_btn, prcnt_btn, clear_btn, ce_btn,dot_btn,\
-                erase_btn, fraction_btn, pow_two_btn, sqrt_btn
+        num_btn = QPushButton(str(number))
+        num_btn.setMinimumSize(75, 50)
+        num_btn.clicked.connect(lambda: 
+            self.btn_actions._add_numbers(num_btn.text(), 
+                                         self.output_line, self.log_line))
+        
+        return num_btn
 
     def _op_btns_init(self, operation: str) -> QPushButton:
         """Connect arithmetic operations to their respective methods.
@@ -251,23 +296,3 @@ class StandardMode:
         func_btn.clicked.connect(func)
         
         return func_btn
-    
-    #Number Buttons Initializer
-    def _numbers_btns_init(self, number: int) -> QPushButton:
-        """Create and connect numbers to the numbers handler method.
-
-        Args:
-            number (int): Number from 0 to 9
-
-        Returns:
-            QPushButton: Button
-        """
-        
-        num_btn = QPushButton(str(number))
-        num_btn.setMinimumSize(75, 50)
-        num_btn.clicked.connect(lambda: 
-            self.btn_actions._add_numbers(num_btn.text(), 
-                                         self.output_line, self.log_line))
-        
-        return num_btn
-    

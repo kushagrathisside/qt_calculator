@@ -138,8 +138,11 @@ class ScientificMode:
         zero_btn = self._numbers_btns_init(0)
         
         # Arithmetic Operations Buttons
-        add_btn, sub_btn, mult_btn, div_btn, equal_btn,\
-            e_btn, pi_btn = self._arithmetic_btns_init()
+        add_btn, sub_btn, mult_btn,\
+            div_btn, equal_btn = self._arithmetic_btns_init()
+            
+        # Constants
+        e_btn, pi_btn = self._constants_init()
             
         # Insertion Buttons
         pos_neg_btn, lb_btn, rb_btn, dot_btn = self._insertion_btns_init()
@@ -177,14 +180,14 @@ class ScientificMode:
         return grid
 
     #Buttons Initializers
-    def _arithmetic_btns_init(self) -> tuple:
+    def _arithmetic_btns_init(self) -> tuple[QPushButton, QPushButton,
+                                             QPushButton, QPushButton,
+                                             QPushButton]:
         """Create basic arithmetic operations buttons.
 
         Returns:
             tuple: Buttons
         """
-
-        pi = "\u03C0"
         
         # Arithmetic operations
         add_btn = self._op_btns_init("+")
@@ -193,14 +196,23 @@ class ScientificMode:
         div_btn = self._op_btns_init("\u00F7")  
         equal_btn = self._op_btns_init("=")
         
-        # Constants
+        return add_btn, sub_btn, mult_btn, div_btn, equal_btn
+
+    def _constants_init(self) -> tuple[QPushButton, QPushButton]:
+        """Create constants buttons.
+
+        Returns:
+            tuple: Buttons
+        """
+        
+        pi = "\u03C0"
+        
         e_btn = self._connect_functions("e", lambda:
             self.btn_actions.print_e(self.output_line, self.log_line))     
         pi_btn = self._connect_functions(f"{pi}", lambda:
             self.btn_actions.print_pi(self.output_line, self.log_line))
-        
-        
-        return add_btn, sub_btn, mult_btn, div_btn, equal_btn, e_btn, pi_btn
+            
+        return e_btn, pi_btn
 
     def _insertion_btns_init(self) -> tuple[QPushButton, QPushButton,
                                             QPushButton, QPushButton]:
@@ -241,8 +253,8 @@ class ScientificMode:
         return fraction_btn
 
     # Advanced operations
-    def _adv_btns_init(self) -> tuple[QPushButton, QPushButton, QPushButton,
-                                      QPushButton]:
+    def _adv_btns_init(self) -> tuple[QPushButton, QPushButton, 
+                                      QPushButton, QPushButton]:
         """Create advanced arithmetic operations buttons
 
         Examples:
@@ -454,8 +466,3 @@ class ScientificMode:
         
         for i in range(0, 6):
             alt_btns[i].setText(alt_ops[i + offset])
-        
-        
-            
-        
-    
