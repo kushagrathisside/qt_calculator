@@ -64,8 +64,8 @@ class ActionsHandler:
                     "fac", "2x", "10x", "ex", "log", 
                     "three", "exp"]
         
-        if len(self.text) <= 12:
-            if self._prev_operation in op_flags or self._clear_log:
+        if len(self.text) <= 12:  #float size
+            if self._prev_operation in op_flags or self._clear_log: #setting up flags
                 self.text = ""
                 self.log = ""
                 self._is_float = False
@@ -74,13 +74,13 @@ class ActionsHandler:
                 
                 self.text += number
                 self.log += number        
-            else:
+            else: #direct add
                 self.text += number
                 self.log += number     
         
-        if self.text[0] == "0":
-            if not self._is_float:
-                self.text = self.text[1:]
+        if self.text[0] == "0":  #string can take 0 but float won't accept it
+            if not self._is_float:     
+                self.text = self.text[1:]   #remove 0 and copy the rest
                 self.log = self.log[1:]
         
         self._set_text(out_line, log_line)
@@ -96,7 +96,7 @@ class ActionsHandler:
         
         if self.text:
             # Addition
-            if operation == "+":
+            if operation == "+": 
                 self._check_first_value(operation, out_line, log_line)
         
             # Subtraction
@@ -319,13 +319,13 @@ class ActionsHandler:
         """Handle number to percentage conversion
         """
         
-        if self.text:
-            if self._is_float:
+        if self.text: #if text is not NULL
+            if self._is_float: #in case of float(float type-casting needed)
                 percentage = round(float(self.text) / 100, 2)
-            else:
+            else: #in case of int(int type-casting needed)
                 percentage = round(int(self.text) / 100, 2)
             
-            self._is_float = True
+            self._is_float = True  
             self._prev_operation = "%"
             
             self._display_answer(out_line, log_line, percentage)
@@ -356,15 +356,15 @@ class ActionsHandler:
             out_line (QLabel): Output QLabel
             log_line (QLabel): Log QLabel
         """
-        if self.text:
-            if self._is_float:
+        if self.text: #if text not equals to NULL
+            if self._is_float: #for typecasting
                 res = 1 / float(self.text)       
             else:
                 res = 1 / int(self.text)
             
-            if len(str(res)) > 10 and len(set(str(res))) > 4:
+            if len(str(res)) > 10 and len(set(str(res))) > 4: #showing if same digits are repeatedly used 
                 self._sci_notation(res)
-            elif len(set(str(res))) <= 4:
+            elif len(set(str(res))) <= 4: #rounding off
                 self.text = str(round(res, 3))
             else:
                 self.text = str(res) 
@@ -398,29 +398,29 @@ class ActionsHandler:
                    f"{cube_root}{it_x}", f"{it_y}{sq_root}{it_x}",
                    f"2{ss_x}", f"log{it_y}{it_x}", f"e{ss_x}"]
         
-        if btn_text == alt_ops[0]:
+        if btn_text == alt_ops[0]:       #power of two
             self.pow_of_two(out_line, log_line)
-        if btn_text == alt_ops[1]:
+        if btn_text == alt_ops[1]:       #square root of a number
             self.square_root(out_line, log_line)
-        if btn_text == alt_ops[2]:
+        if btn_text == alt_ops[2]:       #op handler
             self._operations_handler("ypow", out_line, log_line)
-        if btn_text == alt_ops[3]:
+        if btn_text == alt_ops[3]:       #10 to power x
             self.ten_to_x(out_line, log_line)
-        if btn_text == alt_ops[4]:
+        if btn_text == alt_ops[4]:       #log value
             self.logarithm(out_line, log_line)
         if btn_text == alt_ops[5]:
             self.nat_log(out_line, log_line)
-        if btn_text == alt_ops[6]:
+        if btn_text == alt_ops[6]:       #power of 3
             self.pow_of_three(out_line, log_line)
-        if btn_text == alt_ops[7]:
+        if btn_text == alt_ops[7]:      #cube root
             self.cubed_root(out_line, log_line)
         if btn_text == alt_ops[8]:
             self._operations_handler("yroot", out_line, log_line)
-        if btn_text == alt_ops[9]:
+        if btn_text == alt_ops[9]:      #2 raised to power x
             self.two_to_x(out_line, log_line)
         if btn_text == alt_ops[10]:
             self._operations_handler("ylog", out_line, log_line)
-        if btn_text == alt_ops[11]:
+        if btn_text == alt_ops[11]:     #e raised to power x
             self.e_to_x(out_line, log_line)
     
     @prev_op_handler(prev_op="pow")
@@ -451,8 +451,8 @@ class ActionsHandler:
         """
         
         if self.text:
-            if self._is_float:
-                self.text = str(round(math.sqrt(float(self.text)), 2))
+            if self._is_float:     #using sqrt, math library and rounding off to 2
+                self.text = str(round(math.sqrt(float(self.text)), 2))  
             else:
                 self.text = str(round(math.sqrt(int(self.text)), 2))
     
